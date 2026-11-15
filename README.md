@@ -21,7 +21,11 @@ Coach de disciplina y bienestar emocional por voz. Un orbe que te escucha, te re
 2. En **Settings → Environment Variables** añade:
    - `OPENAI_API_KEY` — tu clave de OpenAI (obligatoria).
    - `OPENAI_MODEL` — opcional, por defecto `gpt-4.1-mini`.
-3. Despliega. La app llama a `/api/chat`, que vive en [api/chat.js](api/chat.js); la clave nunca llega al navegador.
+   - `OPENAI_TTS_MODEL` — opcional, por defecto `gpt-4o-mini-tts` (voz económica con acento latino por instrucciones).
+   - `OPENAI_TTS_VOICE` — opcional, voz por defecto `coral` (también se elige en Configuración).
+3. Despliega. La app llama a `/api/chat` ([api/chat.js](api/chat.js)) y a `/api/tts` ([api/tts.js](api/tts.js)); la clave nunca llega al navegador.
+
+Si la voz de OpenAI no está disponible, el orbe usa la voz del navegador automáticamente.
 
 Sin servidor (por ejemplo en GitHub Pages o abriendo el archivo), la app funciona con un motor local más básico.
 

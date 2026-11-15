@@ -461,7 +461,14 @@
                             </div>
                             <label class="switch"><input type="checkbox" id="set-voice" onchange="setVoiceEnabled(this.checked)"><span class="track"></span><span class="thumb"></span></label>
                         </div>
-                        <button onclick="speakText('Hola, así suena tu coach.')" class="w-full flex items-center justify-between px-4 py-3.5 text-left hover:bg-white/[0.03] transition">
+                        <div class="flex items-center justify-between px-4 py-3.5 gap-3">
+                            <div>
+                                <p class="text-sm">Voz del coach</p>
+                                <p id="tts-status" class="text-[11px] text-white/40">OpenAI · español latino</p>
+                            </div>
+                            <select id="tts-voice-select" onchange="setTTSVoice(this.value)" class="field rounded-xl px-3 py-2 text-xs text-white bg-black"></select>
+                        </div>
+                        <button onclick="speakText('Hola, así suena tu coach. Estoy aquí para ayudarte a cumplir tus objetivos.')" class="w-full flex items-center justify-between px-4 py-3.5 text-left hover:bg-white/[0.03] transition">
                             <span class="text-sm">Probar voz</span>
                             <span class="text-white/40 text-xs">▶</span>
                         </button>
@@ -703,6 +710,7 @@
             const inHours = h => { const d = new Date(Date.now() + h * HOUR); d.setMinutes(0, 0, 0); return d.toISOString(); };
             return {
                 voiceEnabled: true,
+                ttsVoice: 'coral',
                 focusState: 'Neutro',
                 goals: [
                     makeGoal({ title: 'Entregar el trabajo del señor Manuel', horizon: 'Corto Plazo', due: inHours(4) }),
@@ -1074,14 +1082,45 @@
             window.speechSynthesis.onvoiceschanged = () => { cachedVoice = pickVoice(); };
         }
 
+        // ---- Voz de OpenAI (gpt-4o-mini-tts vía /api/tts) con respaldo en la voz del navegador ----
+        const TTS_ENDPOINT = '/api/tts';
+        const TTS_VOICES = [
+            ['coral', 'Coral · cálida'], ['nova', 'Nova · juvenil'], ['shimmer', 'Shimmer · suave'], ['sage', 'Sage · serena'],
+            ['ballad', 'Ballad · expresiva'], ['ash', 'Ash · masculina'], ['echo', 'Echo · masculina grave'],
+            ['onyx', 'Onyx · profunda'], ['verse', 'Verse · narradora'], ['alloy', 'Alloy · neutra']
+        ];
+        const ttsAudio = new Audio();
+        ttsAudio.preload = 'auto';
+        let ttsFailedAt = 0;
+        let ttsStatus = 'unknown'; // unknown | online | offline
+        let resolveCurrentPlay = null;
+
+        // WAV silencioso para "desbloquear" el reproductor dentro del primer toque (política de autoplay móvil)
+        function makeSilentWav() {
+            const sr = 8000, n = 400, buf = new ArrayBuffer(44 + n * 2), v = new DataView(buf);
+            const w = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
+            w(0, 'RIFF'); v.setUint32(4, 36 + n * 2, true); w(8, 'WAVE'); w(12, 'fmt ');
+            v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+            v.setUint32(24, sr, true); v.setUint32(28, sr * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true);
+            w(36, 'data'); v.setUint32(40, n * 2, true);
+            return URL.createObjectURL(new Blob([buf], { type: 'audio/wav' }));
+        }
+
         function unlockSpeech() {
-            if (ttsUnlocked || !('speechSynthesis' in window)) return;
+            if (ttsUnlocked) return;
             ttsUnlocked = true;
             try {
-                const u = new SpeechSynthesisUtterance(' ');
-                u.volume = 0;
-                window.speechSynthesis.speak(u);
+                ttsAudio.src = makeSilentWav();
+                const p = ttsAudio.play();
+                if (p) p.then(() => ttsAudio.pause()).catch(() => {});
             } catch (_) {}
+            if ('speechSynthesis' in window) {
+                try {
+                    const u = new SpeechSynthesisUtterance(' ');
+                    u.volume = 0;
+                    window.speechSynthesis.speak(u);
+                } catch (_) {}
+            }
         }
         ['pointerdown', 'keydown'].forEach(ev => document.addEventListener(ev, unlockSpeech, { once: true, capture: true }));
 
@@ -1090,34 +1129,88 @@
             if ('speechSynthesis' in window && (window.speechSynthesis.speaking || window.speechSynthesis.pending)) {
                 window.speechSynthesis.cancel();
             }
+            try { ttsAudio.pause(); } catch (_) {}
+            if (resolveCurrentPlay) { resolveCurrentPlay(); resolveCurrentPlay = null; }
             if (orbMode === 'speaking') setOrbState('idle');
         }
 
+        // La primera frase va sola para que la voz empiece cuanto antes; el resto se agrupa
         function splitForSpeech(text) {
             const parts = text.replace(/([.!?])\s+/g, '$1|').split('|').map(s => s.trim()).filter(Boolean);
             const chunks = [];
-            parts.forEach(p => {
+            parts.forEach((p, i) => {
                 const last = chunks[chunks.length - 1];
-                if (last && (last + ' ' + p).length < 160) chunks[chunks.length - 1] = last + ' ' + p;
+                if (i > 1 && last && (last + ' ' + p).length < 220) chunks[chunks.length - 1] = last + ' ' + p;
                 else chunks.push(p);
             });
             return chunks;
         }
 
-        // Para conectar una API de voz más adelante: implementa speakWithApi y cambia TTS_PROVIDER a 'api'.
-        const TTS_PROVIDER = 'browser';
-        async function speakWithApi(text) { throw new Error('API de voz no configurada'); }
+        function fetchTTS(text) {
+            return fetch(TTS_ENDPOINT, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text, voice: appState.ttsVoice || 'coral' })
+            }).then(r => {
+                if (!r.ok) throw new Error('TTS ' + r.status);
+                return r.blob();
+            });
+        }
+
+        function playBlob(blob, token) {
+            return new Promise((resolve, reject) => {
+                if (token !== speakToken) return resolve();
+                const url = URL.createObjectURL(blob);
+                const done = () => { URL.revokeObjectURL(url); resolveCurrentPlay = null; resolve(); };
+                resolveCurrentPlay = done;
+                ttsAudio.onended = done;
+                ttsAudio.onerror = () => { URL.revokeObjectURL(url); resolveCurrentPlay = null; reject(new Error('audio')); };
+                ttsAudio.onplaying = () => { if (token === speakToken) setOrbState('speaking'); };
+                ttsAudio.src = url;
+                const p = ttsAudio.play();
+                if (p) p.catch(reject);
+            });
+        }
+
+        // Reproduce frase por frase mientras descarga la siguiente: voz continua y sin esperas largas
+        async function speakWithApi(text, token) {
+            const chunks = splitForSpeech(text);
+            let next = fetchTTS(chunks[0]);
+            for (let i = 0; i < chunks.length; i++) {
+                const blob = await next;
+                if (token !== speakToken) return;
+                if (i + 1 < chunks.length) { next = fetchTTS(chunks[i + 1]); next.catch(() => {}); }
+                await playBlob(blob, token);
+                if (token !== speakToken) return;
+            }
+        }
 
         function speakText(text) {
-            if (TTS_PROVIDER === 'api' && appState.voiceEnabled) {
-                cancelSpeech();
-                setOrbState('speaking');
-                speakWithApi(text)
-                    .then(() => { if (orbMode === 'speaking') setOrbState('idle'); })
-                    .catch(() => speakWithBrowser(text));
-                return;
-            }
-            speakWithBrowser(text);
+            if (!ttsUnlocked) return; // antes del primer toque el navegador no permite reproducir audio
+            const useApi = appState.voiceEnabled && Date.now() - ttsFailedAt > 2 * 60e3;
+            if (!useApi) { speakWithBrowser(text); return; }
+            cancelSpeech();
+            const token = speakToken;
+            setOrbState('thinking'); // mientras llega el primer audio
+            speakWithApi(text, token)
+                .then(() => {
+                    ttsStatus = 'online';
+                    if (token === speakToken && (orbMode === 'speaking' || orbMode === 'thinking')) setOrbState('idle');
+                })
+                .catch(err => {
+                    if (err && err.name === 'NotAllowedError') { if (token === speakToken) setOrbState('idle'); return; }
+                    console.warn('Voz de OpenAI no disponible, usando la del navegador:', err.message);
+                    ttsFailedAt = Date.now();
+                    ttsStatus = 'offline';
+                    if (token === speakToken) speakWithBrowser(text);
+                });
+        }
+
+        function setTTSVoice(v) {
+            appState.ttsVoice = v;
+            ttsFailedAt = 0;
+            saveState();
+            speakText('Hola, así sonará tu coach a partir de ahora.');
         }
 
         function speakWithBrowser(text) {
@@ -2868,6 +2961,13 @@
 
         function renderSettings() {
             document.getElementById('set-voice').checked = !!appState.voiceEnabled;
+            const voiceSel = document.getElementById('tts-voice-select');
+            voiceSel.innerHTML = TTS_VOICES.map(([v, l]) => `<option value="${v}" ${v === (appState.ttsVoice || 'coral') ? 'selected' : ''}>${l}</option>`).join('');
+            document.getElementById('tts-status').textContent = {
+                online: 'OpenAI · español latino · activa',
+                offline: 'Usando la voz del navegador (OpenAI no disponible)',
+                unknown: 'OpenAI · español latino'
+            }[ttsStatus];
             const st = document.getElementById('notif-status');
             const btn = document.getElementById('notif-btn');
             if (!('Notification' in window)) { st.textContent = 'No disponible en este navegador'; btn.classList.add('hidden'); }

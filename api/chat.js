@@ -91,16 +91,7 @@ const RESPONSE_SCHEMA = {
     }
 };
 
-function applyCors(req, res) {
-    const origin = req.headers.origin;
-    const allowed = (process.env.ALLOWED_ORIGINS || '').split(',').map(s => s.trim()).filter(Boolean);
-    if (origin && allowed.includes(origin)) {
-        res.setHeader('Access-Control-Allow-Origin', origin);
-        res.setHeader('Vary', 'Origin');
-        res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-        res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-    }
-}
+const applyCors = require('./_cors');
 
 function sanitizeMessages(messages) {
     if (!Array.isArray(messages)) return [];
