@@ -20,6 +20,7 @@
             --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
             --ease-in: cubic-bezier(0.55, 0, 0.75, 0.2);
             --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+            --ease-ios: cubic-bezier(0.32, 0.72, 0, 1);
             --panel: #0B0B0C;
             --line: rgba(255, 255, 255, 0.1);
             --mood: #FFFFFF;
@@ -40,7 +41,6 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { scrollbar-width: none; }
 
-        /* Superficies sin backdrop-filter (el blur sobre el canvas era la principal fuente de lag) */
         .card { background: rgba(255, 255, 255, 0.035); border: 1px solid var(--line); }
         .btn-ghost { background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.12); transition: background-color .25s ease, color .25s ease, transform .2s var(--ease-out); }
         .btn-ghost:hover { background: rgba(255, 255, 255, 0.1); }
@@ -63,10 +63,7 @@
             box-shadow: 0 0 40px rgba(255,255,255,.25), inset 0 0 18px rgba(255,255,255,.15);
             animation: splashOrb 1.1s var(--ease-out) both;
         }
-        #splash .splash-word {
-            font-size: 12px; font-weight: 500; text-transform: uppercase; color: #fff;
-            animation: splashWord 1.1s var(--ease-out) .1s both;
-        }
+        #splash .splash-word { font-size: 12px; font-weight: 500; text-transform: uppercase; color: #fff; animation: splashWord 1.1s var(--ease-out) .1s both; }
         @keyframes splashOrb { from { transform: scale(.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         @keyframes splashWord { from { letter-spacing: .9em; opacity: 0; } to { letter-spacing: .4em; opacity: .85; } }
         @keyframes splashOut { to { opacity: 0; visibility: hidden; transform: scale(1.04); } }
@@ -101,10 +98,7 @@
         }
         #orb-container.pressing { transform: scale(0.94); transition-duration: .35s; }
         body.listening #orb-container { transform: scale(1.05); }
-        .ripple {
-            position: absolute; inset: 20%; border-radius: 9999px;
-            border: 1px solid rgba(255,255,255,.45); opacity: 0; pointer-events: none;
-        }
+        .ripple { position: absolute; inset: 20%; border-radius: 9999px; border: 1px solid rgba(255,255,255,.45); opacity: 0; pointer-events: none; }
         body.listening .ripple { animation: ripple 2.1s var(--ease-out) infinite; }
         body.listening .ripple:nth-child(2) { animation-delay: .7s; }
         body.listening .ripple:nth-child(3) { animation-delay: 1.4s; }
@@ -124,30 +118,19 @@
         #voice-subtitle { transition: opacity .5s ease, transform .6s var(--ease-out); transform: translateY(6px); }
         #voice-subtitle.show { transform: none; }
 
-        /* ================= HOME ↔ CHAT ================= */
-        #view-home { transition: transform .6s var(--ease-out), opacity .45s ease; will-change: transform, opacity; }
-        body.chat-open #view-home { transform: scale(.9); opacity: 0; }
-        #view-chat {
-            opacity: 0; transform: translateY(28px); visibility: hidden;
-            transition: opacity .35s ease, transform .55s var(--ease-out), visibility 0s linear .55s;
-            will-change: transform, opacity;
-        }
-        body.chat-open #view-chat { opacity: 1; transform: none; visibility: visible; transition: opacity .4s ease .05s, transform .6s var(--ease-out) .05s, visibility 0s; }
-        body:not(.chat-open) #view-chat { transition-timing-function: ease, var(--ease-in), linear; transition-duration: .25s, .35s, 0s; transition-delay: 0s, 0s, .35s; }
-
-        .chat-stagger > * { opacity: 0; transform: translateY(10px); transition: opacity .4s ease, transform .55s var(--ease-out); }
-        body.chat-open .chat-stagger > * { opacity: 1; transform: none; }
-        body.chat-open .chat-stagger > *:nth-child(2) { transition-delay: .08s; }
-        body.chat-open .chat-stagger > *:nth-child(3) { transition-delay: .14s; }
+        /* ================= CHAT (se anima con Web Animations, estilo apertura de app iOS) ================= */
+        #view-home { will-change: transform, opacity; transform-origin: 50% 45%; }
+        #view-chat { visibility: hidden; overflow: hidden; background: #0A0A0B; will-change: transform, opacity; }
+        #view-chat.visible { visibility: visible; }
 
         .mini-orb { width: 14px; height: 14px; border-radius: 9999px; border: 1.5px solid currentColor; box-shadow: 0 0 10px rgba(255,255,255,0.4); animation: miniOrb 2.4s ease-in-out infinite; }
         @keyframes miniOrb { 0%, 100% { transform: scale(0.88); opacity: 0.7; } 50% { transform: scale(1.08); opacity: 1; } }
 
-        /* Mensajes */
-        .msg-new { animation: msgIn .5s var(--ease-out) both; }
+        .msg-new { animation: msgIn .5s var(--ease-ios) both; }
         .msg-user { transform-origin: bottom right; }
         .msg-ai { transform-origin: bottom left; }
-        @keyframes msgIn { from { opacity: 0; transform: translateY(12px) scale(.94); } to { opacity: 1; transform: none; } }
+        @keyframes msgIn { from { opacity: 0; transform: translateY(14px) scale(.92); } to { opacity: 1; transform: none; } }
+        .day-sep { align-self: center; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: rgba(255,255,255,.35); padding: 4px 12px; margin: 8px 0 2px; border-radius: 9999px; background: rgba(255,255,255,.04); }
         .typing span { width: 5px; height: 5px; border-radius: 9999px; background: rgba(255,255,255,.7); animation: typing 1.2s ease-in-out infinite; }
         .typing span:nth-child(2) { animation-delay: .15s; }
         .typing span:nth-child(3) { animation-delay: .3s; }
@@ -156,10 +139,7 @@
         @keyframes sendFly { 0% { transform: none; } 45% { transform: translateY(-14px); opacity: 0; } 46% { transform: translateY(12px); opacity: 0; } 100% { transform: none; opacity: 1; } }
 
         /* ================= HOJAS (MODALES) ================= */
-        .sheet {
-            position: fixed; inset: 0; z-index: 40; display: flex; align-items: center; justify-content: center; padding: 1rem;
-            visibility: hidden; pointer-events: none; transition: visibility 0s linear .45s;
-        }
+        .sheet { position: fixed; inset: 0; z-index: 40; display: flex; align-items: center; justify-content: center; padding: 1rem; visibility: hidden; pointer-events: none; transition: visibility 0s linear .45s; }
         .sheet.is-open { visibility: visible; pointer-events: auto; transition: visibility 0s; }
         .sheet-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,.82); opacity: 0; transition: opacity .4s ease; }
         .sheet.is-open .sheet-backdrop { opacity: 1; }
@@ -170,7 +150,7 @@
             transition: opacity .25s ease, transform .35s var(--ease-in);
             will-change: transform, opacity;
         }
-        .sheet.is-open .sheet-panel { opacity: 1; transform: none; transition: opacity .35s ease, transform .55s var(--ease-out); }
+        .sheet.is-open .sheet-panel { opacity: 1; transform: none; transition: opacity .35s ease, transform .55s var(--ease-ios); }
         @media (max-width: 640px) {
             .sheet { align-items: flex-end; padding: 0; }
             .sheet-panel { width: 100%; border-radius: 28px 28px 0 0 !important; border-bottom: none; transform: translateY(100%); max-height: 92dvh !important; }
@@ -178,9 +158,8 @@
         }
         .sheet-grab { display: none; width: 38px; height: 4px; border-radius: 9999px; background: rgba(255,255,255,.2); margin: 8px auto 0; }
 
-        /* Segmentado con indicador deslizante */
         .segmented { position: relative; display: grid; grid-template-columns: 1fr 1fr; padding: 3px; border-radius: 9999px; background: rgba(255,255,255,.05); border: 1px solid var(--line); }
-        .segmented .seg-indicator { position: absolute; top: 3px; bottom: 3px; left: 3px; width: calc(50% - 3px); border-radius: 9999px; background: #fff; transition: transform .45s var(--ease-out); }
+        .segmented .seg-indicator { position: absolute; top: 3px; bottom: 3px; left: 3px; width: calc(50% - 3px); border-radius: 9999px; background: #fff; transition: transform .45s var(--ease-ios); }
         .segmented[data-tab="pulse"] .seg-indicator { transform: translateX(100%); }
         .segmented button { position: relative; z-index: 1; padding: 7px 14px; font-size: 12px; border-radius: 9999px; transition: color .35s ease; color: rgba(255,255,255,.6); }
         .segmented button.active { color: #000; font-weight: 500; }
@@ -188,12 +167,10 @@
         .pane-in { animation: paneIn .45s var(--ease-out) both; }
         @keyframes paneIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 
-        /* Colapsables suaves (grid-rows) */
         .collapse { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .45s var(--ease-out), opacity .3s ease; opacity: 0; }
         .collapse > div { overflow: hidden; min-height: 0; }
         .collapse.open { grid-template-rows: 1fr; opacity: 1; }
 
-        /* Tarjetas de objetivos */
         .goal-card { position: relative; transition: background-color .3s ease, border-color .3s ease, opacity .3s ease, transform .35s var(--ease-out); }
         .goal-card:hover { background: rgba(255,255,255,.05); }
         .goal-card.card-in { animation: cardIn .5s var(--ease-out) both; }
@@ -206,7 +183,6 @@
 
         .ring-progress { transition: stroke-dashoffset 1.1s var(--ease-out); }
 
-        /* Switch */
         .switch { position: relative; width: 42px; height: 24px; flex-shrink: 0; }
         .switch input { position: absolute; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; z-index: 1; }
         .switch .track { position: absolute; inset: 0; border-radius: 9999px; background: rgba(255,255,255,.12); transition: background-color .3s ease; }
@@ -214,11 +190,9 @@
         .switch input:checked ~ .track { background: #fff; }
         .switch input:checked ~ .thumb { transform: translateX(18px); background: #000; }
 
-        /* Toast */
         #toast-notification { opacity: 0; transform: translate(-50%, -10px) scale(.97); transition: opacity .3s ease, transform .45s var(--ease-out); pointer-events: none; }
         #toast-notification.show { opacity: 1; transform: translate(-50%, 0); }
 
-        /* Overlay de enfoque */
         #strict-focus-overlay { opacity: 0; visibility: hidden; transition: opacity .5s ease, visibility 0s linear .5s; }
         #strict-focus-overlay.is-open { opacity: 1; visibility: visible; transition: opacity .6s ease, visibility 0s; }
         @keyframes pulseSlow { 0%, 100% { opacity: 0.4; transform: scale(0.98); } 50% { opacity: 0.9; transform: scale(1.02); } }
@@ -232,7 +206,6 @@
 </head>
 <body class="bg-black text-white h-[100dvh] flex flex-col selection:bg-white selection:text-black">
 
-    <!-- INTRO -->
     <div id="splash" aria-hidden="true">
         <div class="splash-orb"></div>
         <div class="splash-word">AETHER</div>
@@ -289,9 +262,9 @@
         <button id="attention-pill" onclick="handleAttentionPill()" class="hidden mt-3 text-[11px] px-4 py-2 rounded-full border border-white/20 bg-white/[0.03] hover:bg-white hover:text-black transition max-w-[90%] truncate"></button>
     </main>
 
-    <!-- ===================== VISTA CHAT ===================== -->
-    <section id="view-chat" class="fixed inset-0 z-30 bg-black flex flex-col" aria-hidden="true">
-        <div class="chat-stagger flex flex-col h-full">
+    <!-- ===================== VISTA CHAT (TEXTO, SIN VOZ) ===================== -->
+    <section id="view-chat" class="fixed inset-0 z-30 flex flex-col" aria-hidden="true">
+        <div id="chat-inner" class="flex flex-col h-full">
             <div class="w-full px-4 sm:px-8 pt-4 pb-3 flex items-center justify-between border-b border-white/10 shrink-0">
                 <button onclick="closeChat()" class="btn-ghost flex items-center gap-2.5 px-3.5 py-2 rounded-full text-xs tracking-wide">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
@@ -300,7 +273,7 @@
                 </button>
                 <div class="text-right">
                     <p class="text-xs font-medium tracking-[0.2em] uppercase">Chat Coach</p>
-                    <p class="text-[10px] font-mono text-white/40 uppercase">Piensa · Siente · Haz</p>
+                    <p id="ai-mode-label" class="text-[10px] font-mono text-white/40 uppercase">Historial de conversación</p>
                 </div>
             </div>
 
@@ -313,8 +286,8 @@
                         <button type="button" onclick="closeChat()" title="Volver al orbe de voz" class="p-3 rounded-full hover:bg-white/10 transition shrink-0 flex items-center justify-center text-white">
                             <span class="mini-orb"></span>
                         </button>
-                        <input type="text" id="user-input" autocomplete="off"
-                            placeholder="Qué piensas, cómo te sientes, qué hiciste..."
+                        <input type="text" id="user-input" autocomplete="off" enterkeyhint="send"
+                            placeholder="Escribe al coach..."
                             class="w-full bg-transparent text-sm text-white placeholder-white/30 focus:outline-none font-light px-1" />
                         <button type="submit" id="btn-send" class="btn-solid p-3 rounded-full shrink-0 overflow-hidden">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5L12 3m0 0l7.5 7.5M12 3v18" /></svg>
@@ -345,7 +318,6 @@
             <div id="pane-goals" class="flex-1 min-h-0 overflow-y-auto px-5 sm:px-7 pb-6">
                 <div id="goal-stats" class="grid grid-cols-4 gap-2"></div>
 
-                <!-- Composer -->
                 <div class="mt-4 card rounded-2xl">
                     <button onclick="toggleComposer()" class="w-full flex items-center justify-between px-4 py-3.5 text-left">
                         <span class="flex items-center gap-2.5 text-sm">
@@ -384,7 +356,7 @@
 
                 <div id="goals-list" class="space-y-5"></div>
 
-                <p class="text-[10px] text-white/30 mt-6 leading-relaxed">Recordatorios a 24h · 3h · 1h · 15 min y a la hora exacta. Para recibirlos, mantén la app abierta o permite las notificaciones en Configuración.</p>
+                <p class="text-[10px] text-white/30 mt-6 leading-relaxed">También puedes decirle al orbe: «agenda el gimnasio mañana a las 7», «ya terminé el informe», «me estoy preparando para la reunión».</p>
             </div>
 
             <!-- PANEL PULSO COACH -->
@@ -436,9 +408,17 @@
                     <div id="mood-dist"></div>
                 </div>
 
+                <div class="card rounded-3xl p-5">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-[10px] uppercase tracking-widest text-white/40">Pensamientos · 7 días</span>
+                        <span id="thought-counts" class="text-[10px] font-mono text-white/50"></span>
+                    </div>
+                    <div id="thought-list" class="space-y-2"></div>
+                </div>
+
                 <div>
-                    <span class="text-[10px] uppercase tracking-widest text-white/40 block mb-2">Bitácora pensamiento → emoción → acción</span>
-                    <div id="thought-log-list" class="space-y-2"></div>
+                    <span class="text-[10px] uppercase tracking-widest text-white/40 block mb-2">Historial de conversaciones</span>
+                    <div id="convo-history" class="space-y-2"></div>
                 </div>
 
                 <button onclick="openCheckin()" class="btn-solid w-full py-3 rounded-full text-xs font-semibold tracking-wider uppercase">Hacer check-in ahora</button>
@@ -461,12 +441,23 @@
 
             <div class="flex-1 min-h-0 overflow-y-auto px-5 sm:px-7 pb-6 space-y-6">
                 <section>
+                    <span class="text-[10px] uppercase tracking-widest text-white/40 block mb-2">Inteligencia</span>
+                    <div class="card rounded-2xl flex items-center justify-between px-4 py-3.5 gap-3">
+                        <div>
+                            <p class="text-sm">Motor del coach</p>
+                            <p id="ai-status" class="text-[11px] text-white/40">Comprobando…</p>
+                        </div>
+                        <span id="ai-dot" class="w-2.5 h-2.5 rounded-full bg-white/30"></span>
+                    </div>
+                </section>
+
+                <section>
                     <span class="text-[10px] uppercase tracking-widest text-white/40 block mb-2">Audio</span>
                     <div class="card rounded-2xl divide-y divide-white/10">
                         <div class="flex items-center justify-between px-4 py-3.5">
                             <div>
                                 <p class="text-sm">Voz del orbe</p>
-                                <p class="text-[11px] text-white/40">El coach responde en voz alta</p>
+                                <p class="text-[11px] text-white/40">Lee las respuestas en el modo voz (el chat de texto es silencioso)</p>
                             </div>
                             <label class="switch"><input type="checkbox" id="set-voice" onchange="setVoiceEnabled(this.checked)"><span class="track"></span><span class="thumb"></span></label>
                         </div>
@@ -489,12 +480,16 @@
                 </section>
 
                 <section>
-                    <span class="text-[10px] uppercase tracking-widest text-white/40 block mb-2">Bloqueo de apps · Escudo de enfoque</span>
+                    <span class="text-[10px] uppercase tracking-widest text-white/40 block mb-2">Bloqueo de apps</span>
                     <div class="card rounded-2xl">
-                        <div class="flex items-center justify-between px-4 py-3.5 border-b border-white/10 gap-3">
+                        <div id="apps-blocker-list" class="divide-y divide-white/10"></div>
+                    </div>
+
+                    <div class="card rounded-2xl mt-3">
+                        <div class="flex items-center justify-between px-4 py-3.5 gap-3 border-b border-white/10">
                             <div>
-                                <p class="text-sm">Duración del bloqueo</p>
-                                <p class="text-[11px] text-white/40">Impide abrir apps hasta completar tu paso</p>
+                                <p class="text-sm">Enfoque estricto</p>
+                                <p class="text-[11px] text-white/40">Pantalla de bloqueo con temporizador</p>
                             </div>
                             <select id="focus-duration-select" class="field rounded-xl px-3 py-2 text-xs text-white bg-black">
                                 <option value="15">15 min</option>
@@ -503,17 +498,37 @@
                                 <option value="60">60 min</option>
                             </select>
                         </div>
-                        <div id="apps-blocker-list" class="divide-y divide-white/10"></div>
+                        <div class="px-4 py-3">
+                            <button onclick="activateStrictFocusMode()" class="btn-solid w-full py-2.5 rounded-full text-xs font-semibold tracking-wider uppercase">Activar ahora</button>
+                        </div>
                     </div>
-                    <button onclick="activateStrictFocusMode()" class="btn-solid mt-3 w-full py-3 rounded-full text-xs font-semibold tracking-wider uppercase flex items-center justify-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/></svg>
-                        Activar modo enfoque estricto
-                    </button>
+
+                    <div class="card rounded-2xl mt-3">
+                        <div class="flex items-center justify-between px-4 py-3.5 gap-3 border-b border-white/10">
+                            <div>
+                                <p class="text-sm">Bloqueo programado</p>
+                                <p class="text-[11px] text-white/40">Horas, días o meses · o pídelo por voz</p>
+                            </div>
+                            <select id="block-duration-select" class="field rounded-xl px-3 py-2 text-xs text-white bg-black">
+                                <option value="120">2 horas</option>
+                                <option value="480">8 horas</option>
+                                <option value="1440">1 día</option>
+                                <option value="4320">3 días</option>
+                                <option value="10080">1 semana</option>
+                                <option value="43200">1 mes</option>
+                            </select>
+                        </div>
+                        <div class="px-4 py-3">
+                            <button onclick="scheduleBlockFromSettings()" class="btn-ghost w-full py-2.5 rounded-full text-xs font-semibold tracking-wider uppercase">Programar bloqueo</button>
+                        </div>
+                        <div id="active-blocks" class="divide-y divide-white/10 border-t border-white/10"></div>
+                    </div>
+                    <p class="text-[10px] text-white/30 mt-2 leading-relaxed">En la versión web el bloqueo es un compromiso registrado que el coach supervisa; bloquear otras apps del sistema requiere la app nativa.</p>
                 </section>
 
                 <section>
                     <span class="text-[10px] uppercase tracking-widest text-white/40 block mb-2">Datos</span>
-                    <button onclick="clearHistory()" class="card w-full rounded-2xl px-4 py-3.5 text-left text-sm text-white/70 hover:text-white hover:bg-white/[0.05] transition">Reiniciar check-ins, bitácora y conversación</button>
+                    <button onclick="clearHistory()" class="card w-full rounded-2xl px-4 py-3.5 text-left text-sm text-white/70 hover:text-white hover:bg-white/[0.05] transition">Reiniciar check-ins, pensamientos y conversaciones</button>
                 </section>
             </div>
         </div>
@@ -537,12 +552,15 @@
 
                 <div id="ci-moods" class="grid grid-cols-2 gap-2 mt-5"></div>
 
-                <div class="mt-5">
-                    <div class="flex justify-between text-[11px] text-white/50 mb-1.5">
-                        <span>Intensidad</span>
-                        <span id="ci-int-val" class="font-mono text-white">3 / 5</span>
+                <div class="mt-5 grid grid-cols-2 gap-4">
+                    <div>
+                        <div class="flex justify-between text-[11px] text-white/50 mb-1.5"><span>Intensidad</span><span id="ci-int-val" class="font-mono text-white">3 / 5</span></div>
+                        <input type="range" id="ci-intensity" min="1" max="5" value="3" class="w-full" oninput="document.getElementById('ci-int-val').textContent = this.value + ' / 5'">
                     </div>
-                    <input type="range" id="ci-intensity" min="1" max="5" value="3" class="w-full" oninput="document.getElementById('ci-int-val').textContent = this.value + ' / 5'">
+                    <div>
+                        <div class="flex justify-between text-[11px] text-white/50 mb-1.5"><span>Motivación</span><span id="ci-mot-val" class="font-mono text-white">3 / 5</span></div>
+                        <input type="range" id="ci-motivation" min="1" max="5" value="3" class="w-full" oninput="document.getElementById('ci-mot-val').textContent = this.value + ' / 5'">
+                    </div>
                 </div>
 
                 <div id="ci-extra-morning" class="hidden mt-5">
@@ -561,8 +579,12 @@
                 </div>
 
                 <div class="mt-5">
-                    <label class="text-[11px] text-white/50 block mb-1.5">¿Qué pensamiento acompaña esta emoción? (opcional)</label>
-                    <textarea id="ci-note" rows="2" placeholder="Ej: me preocupa no terminar a tiempo..." class="field w-full rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-white/30 resize-none"></textarea>
+                    <label class="text-[11px] block mb-1.5"><span style="color:#F87171">●</span> <span class="text-white/50">¿Algún pensamiento intrusivo hoy? (opcional)</span></label>
+                    <textarea id="ci-intrusive" rows="2" placeholder="Ej: sentí que no iba a ser capaz..." class="field w-full rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-white/30 resize-none"></textarea>
+                </div>
+                <div class="mt-3">
+                    <label class="text-[11px] block mb-1.5"><span style="color:#4ADE80">●</span> <span class="text-white/50">¿Qué pensamiento positivo tuviste? (opcional)</span></label>
+                    <textarea id="ci-positive" rows="2" placeholder="Ej: me sentí orgulloso de terminar a tiempo..." class="field w-full rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-white/30 resize-none"></textarea>
                 </div>
 
                 <button onclick="saveCheckin()" class="btn-solid mt-5 w-full py-3 rounded-full text-xs font-semibold tracking-wider uppercase">Registrar</button>
@@ -597,7 +619,6 @@
         </div>
     </div>
 
-    <!-- Toast -->
     <div id="toast-notification" class="fixed top-16 left-1/2 bg-[#111] px-4 py-2.5 rounded-full text-xs text-white shadow-2xl z-[70] border border-white/20 max-w-[92vw] text-center">
         <span id="toast-message"></span>
     </div>
@@ -608,8 +629,8 @@
         // =========================================================================
         const STORAGE_KEY = 'aether_state_v2';
         const LEGACY_KEY = 'aether_cognitive_state_v1';
-        // Opcional: pega aquí tu API key de Gemini. Vacía = motor local (funciona sin internet).
-        const GEMINI_API_KEY = '';
+        // Endpoint de IA (función de Vercel en /api/chat que usa OpenAI). Si no responde, se usa el motor local.
+        const AI_ENDPOINT = '/api/chat';
 
         const MOODS = {
             positivo:  { label: 'Positivo',  hint: 'Con energía, motivado', color: '#F5C451', base: 88, valence: 1 },
@@ -618,8 +639,12 @@
             ansioso:   { label: 'Ansioso',   hint: 'Inquieto, preocupado',  color: '#A98BF5', base: 28, valence: -1 },
             neutro:    { label: 'Neutro',    hint: 'Normal, estable',       color: '#D4D4D8', base: 60, valence: 0 }
         };
-        // Color del ícono de persona: positivos verde, negativos rojo, neutro blanco
+        // Ícono de persona: positivos verde, negativos rojo, neutro blanco
         const VALENCE_COLORS = { 1: '#4ADE80', '-1': '#F87171', 0: '#FFFFFF' };
+        const THOUGHT_TYPES = {
+            intrusivo: { label: 'Intrusivo', color: '#F87171' },
+            positivo:  { label: 'Positivo',  color: '#4ADE80' }
+        };
         const SLOTS = {
             manana: { label: 'Mañana', question: '¿Cómo amaneciste?',     icon: '☀' },
             tarde:  { label: 'Tarde',  question: '¿Cómo va tu tarde?',    icon: '◐' },
@@ -628,6 +653,8 @@
         const RING_COLORS = { siento: '#FF5C8A', pienso: '#6FB6FF', hago: '#A6E35B' };
         const TONE_COLORS = { alert: '#FF6B6B', warn: '#F5C451', info: '#6FB6FF', muted: 'rgba(255,255,255,0.45)', good: '#A6E35B' };
         const HOUR = 3600e3;
+        const IOS_EASE = 'cubic-bezier(0.32, 0.72, 0, 1)';
+        const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
         const pad = n => String(n).padStart(2, '0');
         const uid = () => Date.now() * 1000 + Math.floor(Math.random() * 1000);
@@ -657,6 +684,11 @@
             const [y, m, d] = dk.split('-').map(Number);
             return new Date(y, m - 1, d, 12);
         }
+        function dayLabel(dk) {
+            if (dk === dayKeyOffset(0)) return 'Hoy';
+            if (dk === dayKeyOffset(-1)) return 'Ayer';
+            return dateFromDayKey(dk).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'short' });
+        }
 
         function makeGoal({ title, horizon = 'Corto Plazo', due = null }) {
             return {
@@ -681,18 +713,19 @@
                 checkins: [],
                 intentions: {},
                 reflections: {},
-                thoughtLogs: [],
+                thoughts: [],        // solo pensamientos reales (intrusivos / positivos), no toda la conversación
                 focusSessions: [],
+                appBlocks: [],       // bloqueos programados { apps, from, until }
                 promptedSlots: {},
                 awaiting: null,
                 blockedApps: [
                     { id: 'ig', name: 'Instagram', limit: '15m/día', blocked: true },
                     { id: 'tt', name: 'TikTok', limit: '10m/día', blocked: true },
-                    { id: 'wa', name: 'WhatsApp (Chats no urgentes)', limit: '30m/día', blocked: false },
-                    { id: 'yt', name: 'YouTube Shorts', limit: '15m/día', blocked: true },
+                    { id: 'wa', name: 'WhatsApp', limit: '30m/día', blocked: false },
+                    { id: 'yt', name: 'YouTube', limit: '15m/día', blocked: true },
                     { id: 'x', name: 'X / Twitter', limit: '10m/día', blocked: true }
                 ],
-                chatHistory: []
+                chatHistory: []      // historial completo de conversaciones
             };
         }
 
@@ -705,9 +738,11 @@
                     const merged = { ...base, ...parsed };
                     merged.goals = (merged.goals || []).map(g => ({ ...makeGoal(g), ...g, subgoals: g.subgoals || [], reminders: g.reminders || {} }));
                     merged.checkins = (merged.checkins || []).filter(c => MOODS[c.mood]);
+                    merged.thoughts = merged.thoughts || [];
+                    merged.appBlocks = merged.appBlocks || [];
+                    delete merged.thoughtLogs; // la antigua "bitácora" trataba cada mensaje como reflexión
                     return merged;
                 }
-                // Migración desde la versión anterior (objetivos sin fecha/hora)
                 const legacy = localStorage.getItem(LEGACY_KEY);
                 if (legacy) {
                     const old = JSON.parse(legacy);
@@ -736,7 +771,7 @@
         }
 
         // =========================================================================
-        // 2. ORBE (CANVAS) — se pausa cuando está tapado para no gastar GPU
+        // 2. ORBE (CANVAS) — se pausa cuando está tapado
         // =========================================================================
         const canvas = document.getElementById('orb-canvas');
         const ctx = canvas.getContext('2d');
@@ -746,7 +781,7 @@
         let targetAmplitude = 2;
         let orbMode = 'idle';
         let orbTint = [255, 255, 255];
-        let voiceLevel = 0;        // pico reactivo a la voz del usuario
+        let voiceLevel = 0;
         let orbRaf = null;
         let orbPaused = false;
         let orbW = 0, orbH = 0;
@@ -767,7 +802,7 @@
             const map = {
                 speaking:  { amp: 20,  text: 'RESPONDIENDO', strong: true },
                 listening: { amp: 7,   text: 'TE ESCUCHO · SUELTA PARA ENVIAR', strong: true },
-                thinking:  { amp: 10,  text: 'PROCESANDO', strong: true },
+                thinking:  { amp: 10,  text: 'PENSANDO', strong: true },
                 idle:      { amp: 2.2, text: 'EN REPOSO', strong: false }
             };
             const s = map[state] || map.idle;
@@ -813,7 +848,6 @@
             ctx.arc(cx, cy, baseRadius * 1.6, 0, Math.PI * 2);
             ctx.fill();
 
-            // Escuchando: rápida "respiración" del radio para que se note que está atento
             const breathe = listening ? Math.sin(orbPhase * 1.6) * 4 : 0;
 
             ORB_LAYERS.forEach(layer => {
@@ -837,7 +871,6 @@
                 ctx.stroke();
             });
 
-            // Escuchando: arcos orbitando alrededor del orbe
             if (listening) {
                 const rr = baseRadius * 1.32;
                 ctx.lineWidth = 1.6;
@@ -869,7 +902,7 @@
             const covered = isChatOpen() || document.querySelector('.sheet.is-open') || document.getElementById('strict-focus-overlay').classList.contains('is-open');
             clearTimeout(pauseTimer);
             if (covered) {
-                pauseTimer = setTimeout(() => { orbPaused = true; }, 600);
+                pauseTimer = setTimeout(() => { orbPaused = true; }, 700);
             } else {
                 orbPaused = false;
                 if (!orbRaf) orbRaf = requestAnimationFrame(animateOrb);
@@ -877,7 +910,9 @@
         }
 
         // =========================================================================
-        // 3. INTERACCIÓN DEL ORBE: TOQUE = CHAT · MANTENER = VOZ
+        // 3. ORBE: TOQUE = CHAT · MANTENER = VOZ
+        // El micrófono arranca dentro del gesto (pointerdown), requisito de los navegadores
+        // móviles; si resulta ser un toque corto se descarta y se abre el chat.
         // =========================================================================
         const HOLD_MS = 320;
         let holdTimer = null;
@@ -889,12 +924,14 @@
             try { orbEl.setPointerCapture(e.pointerId); } catch (_) {}
             holdActive = false;
             orbEl.classList.add('pressing');
+            unlockSpeech();
+            beginRecognition();
             holdTimer = setTimeout(() => {
                 holdTimer = null;
                 holdActive = true;
                 orbEl.classList.remove('pressing');
                 if (navigator.vibrate) navigator.vibrate(18);
-                startVoiceCapture();
+                showListeningUI();
             }, HOLD_MS);
         });
         function endOrbPress(isTap) {
@@ -902,6 +939,7 @@
             if (holdTimer) {
                 clearTimeout(holdTimer);
                 holdTimer = null;
+                discardRecognition();
                 if (isTap) openChat();
             } else if (holdActive) {
                 holdActive = false;
@@ -913,26 +951,26 @@
 
         orbEl.addEventListener('keydown', e => {
             if (e.key === 'Enter') openChat();
-            if (e.key === ' ' && !e.repeat) { e.preventDefault(); holdActive = true; startVoiceCapture(); }
+            if (e.key === ' ' && !e.repeat) { e.preventDefault(); holdActive = true; unlockSpeech(); beginRecognition(); showListeningUI(); }
         });
         orbEl.addEventListener('keyup', e => {
             if (e.key === ' ' && holdActive) { holdActive = false; stopVoiceCapture(); }
         });
 
         // =========================================================================
-        // 4. VOZ: RECONOCIMIENTO (PUSH-TO-TALK) Y SÍNTESIS
+        // 4. VOZ: RECONOCIMIENTO (PUSH-TO-TALK) Y SÍNTESIS DEL NAVEGADOR
         // =========================================================================
         let recognition = null;
-        let isListening = false;    // el motor de reconocimiento está activo
-        let wantListening = false;  // el usuario sigue presionando el orbe
-        let committedText = '';     // texto de sesiones anteriores (el navegador corta en silencios)
+        let isListening = false;
+        let wantListening = false;
+        let discardVoice = false;
+        let committedText = '';
         let sessionText = '';
         const IS_ANDROID = /Android/i.test(navigator.userAgent);
         const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (SpeechRec) {
             recognition = new SpeechRec();
             recognition.lang = (navigator.language || '').startsWith('es') ? navigator.language : 'es-ES';
-            // En Android el modo continuo duplica resultados: se usa modo simple y se reinicia mientras se mantenga presionado
             recognition.continuous = !IS_ANDROID;
             recognition.interimResults = true;
             recognition.maxAlternatives = 1;
@@ -948,20 +986,21 @@
                     else interim += r[0].transcript;
                 }
                 sessionText = (finalText + interim).trim();
-                voiceLevel = Math.min(1, voiceLevel + 0.55); // el orbe "late" con cada palabra reconocida
-                showSubtitle(currentTranscript(), 'user');
+                voiceLevel = Math.min(1, voiceLevel + 0.55);
+                if (orbMode === 'listening') showSubtitle(currentTranscript(), 'user');
             };
             recognition.onerror = (e) => {
+                if (discardVoice) return;
                 if (e.error === 'not-allowed' || e.error === 'service-not-allowed') { wantListening = false; showToast('Permite el micrófono para hablar con el orbe'); }
                 else if (e.error === 'audio-capture') { wantListening = false; showToast('No se detecta el micrófono'); }
                 else if (e.error === 'network') { wantListening = false; showToast('El reconocimiento de voz necesita conexión a internet'); }
-                // 'no-speech' y 'aborted' se resuelven en onend
             };
             recognition.onend = () => {
                 isListening = false;
+                if (discardVoice) { committedText = ''; sessionText = ''; discardVoice = false; return; }
                 committedText = currentTranscript();
                 sessionText = '';
-                if (wantListening) { try { recognition.start(); } catch (_) {} return; } // sigue presionado: continuar escuchando
+                if (wantListening) { try { recognition.start(); } catch (_) {} return; }
                 finishVoiceCapture();
             };
         }
@@ -970,46 +1009,56 @@
             return [committedText, sessionText].filter(Boolean).join(' ').trim();
         }
 
-        function finishVoiceCapture() {
-            const text = committedText.trim();
+        function beginRecognition() {
+            if (!recognition) return;
+            cancelSpeech();
             committedText = '';
             sessionText = '';
-            if (text) {
-                submitUserText(text); // el coach responde con voz al terminar de procesar
-            } else if (orbMode === 'listening') {
-                setOrbState('idle');
-                showSubtitle('No te escuché. Mantén presionado el orbe mientras hablas.', 'ai');
-            }
+            discardVoice = false;
+            wantListening = true;
+            if (!isListening) { try { recognition.start(); } catch (_) {} }
         }
 
-        function startVoiceCapture() {
+        function discardRecognition() {
+            if (!recognition) return;
+            wantListening = false;
+            discardVoice = true;
+            try { recognition.abort(); } catch (_) {}
+            setTimeout(() => { if (!isListening) discardVoice = false; }, 800);
+        }
+
+        function showListeningUI() {
             if (!recognition) {
                 showToast('Tu navegador no soporta voz. Usa Chrome o toca el orbe para escribir.');
                 return;
             }
-            unlockSpeech();
-            cancelSpeech();
-            committedText = '';
-            sessionText = '';
-            wantListening = true;
-            setOrbState('listening'); // feedback inmediato, sin esperar al navegador
-            showSubtitle('', 'user');
-            if (!isListening) { try { recognition.start(); } catch (_) {} }
+            setOrbState('listening');
+            showSubtitle(currentTranscript(), 'user');
         }
 
         function stopVoiceCapture() {
             if (!recognition) return;
             wantListening = false;
             try { recognition.stop(); } catch (_) {}
-            // Red de seguridad si el navegador no dispara onend
             setTimeout(() => { if (!isListening && orbMode === 'listening') finishVoiceCapture(); }, 1500);
         }
 
-        // ---- Síntesis de voz del navegador ----
+        function finishVoiceCapture() {
+            const text = committedText.trim();
+            committedText = '';
+            sessionText = '';
+            if (text) {
+                submitUserText(text, 'voice');
+            } else if (orbMode === 'listening') {
+                setOrbState('idle');
+                showSubtitle('No te escuché. Mantén presionado el orbe mientras hablas.', 'ai');
+            }
+        }
+
         let ttsUnlocked = false;
         let cachedVoice = null;
         let speakToken = 0;
-        let currentUtterance = null; // referencia viva: si el recolector la borra, Chrome no dispara onend
+        let currentUtterance = null;
 
         function pickVoice() {
             if (!('speechSynthesis' in window)) return null;
@@ -1025,7 +1074,6 @@
             window.speechSynthesis.onvoiceschanged = () => { cachedVoice = pickVoice(); };
         }
 
-        // Los navegadores móviles solo permiten hablar después de un gesto: se "desbloquea" en el primer toque
         function unlockSpeech() {
             if (ttsUnlocked || !('speechSynthesis' in window)) return;
             ttsUnlocked = true;
@@ -1046,7 +1094,6 @@
         }
 
         function splitForSpeech(text) {
-            // Frases cortas: evita que Chrome corte textos largos a los ~15 segundos
             const parts = text.replace(/([.!?])\s+/g, '$1|').split('|').map(s => s.trim()).filter(Boolean);
             const chunks = [];
             parts.forEach(p => {
@@ -1057,14 +1104,9 @@
             return chunks;
         }
 
-        // ---- Proveedor de voz ----
-        // 'browser' = voz del navegador (actual). Para conectar una API de voz, implementa
-        // speakWithApi(text) para que devuelva un Promise que se resuelva al terminar el audio,
-        // y cambia TTS_PROVIDER a 'api'. Si la API falla, se vuelve a la voz del navegador.
+        // Para conectar una API de voz más adelante: implementa speakWithApi y cambia TTS_PROVIDER a 'api'.
         const TTS_PROVIDER = 'browser';
-        async function speakWithApi(text) {
-            throw new Error('API de voz no configurada');
-        }
+        async function speakWithApi(text) { throw new Error('API de voz no configurada'); }
 
         function speakText(text) {
             if (TTS_PROVIDER === 'api' && appState.voiceEnabled) {
@@ -1110,9 +1152,7 @@
             };
 
             setOrbState('speaking');
-            // Chrome descarta un speak() inmediatamente posterior a cancel(): pequeño respiro
             setTimeout(speakNext, 90);
-            // Si el navegador bloqueó la voz, no dejar el orbe "hablando" para siempre
             setTimeout(() => {
                 if (token === speakToken && orbMode === 'speaking' && !synth.speaking && !synth.pending) setOrbState('idle');
             }, 4000);
@@ -1138,7 +1178,7 @@
         }
 
         // =========================================================================
-        // 5. VISTA CHAT
+        // 5. CHAT DE TEXTO — animación tipo apertura de app de iPhone desde el orbe
         // =========================================================================
         const QUICK_REPLIES = [
             { t: 'Me siento positivo y con energía', l: 'Positivo', c: MOODS.positivo.color },
@@ -1157,44 +1197,118 @@
                 </button>`).join('');
         }
 
+        const chatEl = document.getElementById('view-chat');
+        const chatInnerEl = document.getElementById('chat-inner');
+        const homeEl = document.getElementById('view-home');
+        let chatAnims = [];
+
         function isChatOpen() { return document.body.classList.contains('chat-open'); }
+
+        // Forma inicial/final: una cápsula del tamaño del núcleo del orbe, centrada sobre él
+        function orbOriginFrame() {
+            const r = orbEl.getBoundingClientRect();
+            const vw = window.innerWidth, vh = window.innerHeight;
+            const size = Math.max(r.width * 0.5, 64);
+            const s = size / vw;
+            const dx = r.left + r.width / 2 - vw / 2;
+            const dy = r.top + r.height / 2 - vh / 2;
+            return { transform: `translate(${dx}px, ${dy}px) scale(${s})`, radius: `${vw / 2}px` };
+        }
+
+        function stopChatAnims() { chatAnims.forEach(a => a.cancel()); chatAnims = []; }
+
         function openChat() {
             if (isChatOpen()) return;
+            cancelSpeech(); // el chat de texto es silencioso
             document.body.classList.add('chat-open');
-            document.getElementById('view-chat').setAttribute('aria-hidden', 'false');
+            chatEl.classList.add('visible');
+            chatEl.setAttribute('aria-hidden', 'false');
             history.pushState({ chat: true }, '');
             const stream = document.getElementById('chat-stream');
             stream.scrollTop = stream.scrollHeight;
+
+            stopChatAnims();
+            const dur = REDUCED_MOTION ? 0.01 : 1;
+            const o = orbOriginFrame();
+            chatAnims = [
+                chatEl.animate([
+                    { transform: o.transform, borderRadius: o.radius, opacity: 0, boxShadow: '0 0 0 1px rgba(255,255,255,0.35)' },
+                    { opacity: 1, offset: 0.15 },
+                    { transform: 'none', borderRadius: '0px', opacity: 1, boxShadow: '0 0 0 1px rgba(255,255,255,0)' }
+                ], { duration: 620 * dur, easing: IOS_EASE, fill: 'both' }),
+                chatInnerEl.animate([
+                    { opacity: 0, transform: 'scale(0.94)' },
+                    { opacity: 1, transform: 'none' }
+                ], { duration: 460 * dur, delay: 150 * dur, easing: IOS_EASE, fill: 'both' }),
+                homeEl.animate([
+                    { transform: 'none', opacity: 1 },
+                    { transform: 'scale(0.86)', opacity: 0 }
+                ], { duration: 520 * dur, easing: IOS_EASE, fill: 'forwards' })
+            ];
             updateOrbPause();
-            // Sin foco automático: el teclado solo aparece cuando el usuario toca la casilla
         }
+
         function closeChat(fromPop = false) {
             if (!isChatOpen()) return;
             document.getElementById('user-input').blur();
             document.body.classList.remove('chat-open');
-            document.getElementById('view-chat').setAttribute('aria-hidden', 'true');
+            chatEl.setAttribute('aria-hidden', 'true');
             updateOrbPause();
+
+            stopChatAnims();
+            const o = orbOriginFrame();
+            const main = chatEl.animate([
+                { transform: 'none', borderRadius: '0px', opacity: 1, boxShadow: '0 0 0 1px rgba(255,255,255,0)' },
+                { opacity: 1, offset: 0.7 },
+                { transform: o.transform, borderRadius: o.radius, opacity: 0, boxShadow: '0 0 0 1px rgba(255,255,255,0.35)' }
+            ], { duration: 520, easing: IOS_EASE, fill: 'both' });
+            chatAnims = [
+                main,
+                chatInnerEl.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 200, easing: 'ease-out', fill: 'both' }),
+                homeEl.animate([
+                    { transform: 'scale(0.86)', opacity: 0 },
+                    { transform: 'none', opacity: 1 }
+                ], { duration: 560, easing: IOS_EASE, fill: 'both' })
+            ];
+            main.onfinish = () => {
+                if (isChatOpen()) return;
+                chatEl.classList.remove('visible');
+                stopChatAnims();
+            };
             if (!fromPop && history.state && history.state.chat) history.back();
         }
         window.addEventListener('popstate', () => closeChat(true));
 
+        let lastRenderedDay = null;
         function renderMessage(m, animate = false) {
             const stream = document.getElementById('chat-stream');
+            const typing = document.getElementById('typing-bubble');
+            const insert = el => { if (typing) stream.insertBefore(el, typing); else stream.appendChild(el); };
+
+            const dk = dayKey(new Date(m.timestamp || Date.now()));
+            if (dk !== lastRenderedDay) {
+                lastRenderedDay = dk;
+                const sep = document.createElement('div');
+                sep.className = 'day-sep' + (animate ? ' msg-new' : '');
+                sep.id = 'day-' + dk;
+                sep.textContent = dayLabel(dk);
+                insert(sep);
+            }
+
             const wrapper = document.createElement('div');
             wrapper.className = (m.sender === 'user'
-                ? 'msg-user self-end max-w-[85%] bg-white text-black px-4 py-2.5 rounded-2xl rounded-br-md text-sm'
-                : 'msg-ai self-start max-w-[90%] card text-white/90 px-4 py-3 rounded-2xl rounded-bl-md text-sm font-light leading-relaxed')
+                ? 'msg-user self-end max-w-[85%] bg-white text-black px-4 py-2.5 rounded-[20px] rounded-br-md text-sm'
+                : 'msg-ai self-start max-w-[88%] card text-white/90 px-4 py-3 rounded-[20px] rounded-bl-md text-sm font-light leading-relaxed')
                 + (animate ? ' msg-new' : '');
             wrapper.textContent = m.text;
-            const typing = document.getElementById('typing-bubble');
-            if (typing) stream.insertBefore(wrapper, typing); else stream.appendChild(wrapper);
+            insert(wrapper);
             stream.scrollTo({ top: stream.scrollHeight, behavior: animate ? 'smooth' : 'auto' });
         }
 
-        function appendMessage(sender, text) {
-            const m = { sender, text, timestamp: Date.now() };
+        function appendMessage(sender, text, via = null) {
+            const m = { sender, text, timestamp: Date.now(), via };
             appState.chatHistory.push(m);
-            if (appState.chatHistory.length > 60) appState.chatHistory.shift();
+            if (appState.chatHistory.length > 500) appState.chatHistory.shift();
             renderMessage(m, true);
         }
 
@@ -1203,17 +1317,18 @@
             const stream = document.getElementById('chat-stream');
             const el = document.createElement('div');
             el.id = 'typing-bubble';
-            el.className = 'msg-ai msg-new self-start card px-4 py-3.5 rounded-2xl rounded-bl-md typing flex gap-1.5';
+            el.className = 'msg-ai msg-new self-start card px-4 py-3.5 rounded-[20px] rounded-bl-md typing flex gap-1.5';
             el.innerHTML = '<span></span><span></span><span></span>';
             stream.appendChild(el);
             stream.scrollTo({ top: stream.scrollHeight, behavior: 'smooth' });
         }
         function hideTyping() { const el = document.getElementById('typing-bubble'); if (el) el.remove(); }
 
-        function submitUserText(text) {
-            appendMessage('user', text);
+        // via: 'voice' (el orbe lee la respuesta) o 'text' (chat silencioso)
+        function submitUserText(text, via = 'text') {
+            appendMessage('user', text, via);
             saveState();
-            processUserMessage(text);
+            processUserMessage(text, via);
         }
 
         function handleUserSubmit(e) {
@@ -1224,21 +1339,24 @@
             input.value = '';
             const btn = document.getElementById('btn-send');
             btn.classList.remove('send-fly'); void btn.offsetWidth; btn.classList.add('send-fly');
-            submitUserText(text);
+            submitUserText(text, 'text');
         }
 
-        function sendQuickReply(i) { submitUserText(QUICK_REPLIES[i].t); }
+        function sendQuickReply(i) { submitUserText(QUICK_REPLIES[i].t, 'text'); }
 
-        function coachSay(text, { speak = true, notify = false } = {}) {
+        // Mensajes proactivos: solo se leen en voz si el usuario está en el modo voz (chat cerrado)
+        function coachSay(text, { notify = false } = {}) {
             appendMessage('ai', text);
-            showSubtitle(text, 'ai');
-            if (speak) speakText(text);
+            if (!isChatOpen()) {
+                showSubtitle(text, 'ai');
+                speakText(text);
+            }
             if (notify) sendBrowserNotification(text);
             saveState();
         }
 
         // =========================================================================
-        // 6. HOJAS (MODALES) CON ANIMACIÓN DE ENTRADA Y SALIDA
+        // 6. HOJAS (MODALES)
         // =========================================================================
         function isSheetOpen(id) { return document.getElementById(id).classList.contains('is-open'); }
         function openSheet(id) {
@@ -1273,9 +1391,14 @@
             if (tab === 'goals') renderGoals({ stagger: true }); else renderPulse();
             if (animate) { show.classList.remove('pane-in'); void show.offsetWidth; show.classList.add('pane-in'); }
         }
+        function refreshHub() {
+            if (!isSheetOpen('sheet-hub')) return;
+            if (hubTab === 'goals') { if (!document.getElementById('goals-list').contains(document.activeElement)) renderGoals(); }
+            else renderPulse();
+        }
 
         // =========================================================================
-        // 7. OBJETIVOS: FECHA, HORA, PROXIMIDAD Y SUBOBJETIVOS
+        // 7. OBJETIVOS
         // =========================================================================
         let currentGoalFilter = 'Todos';
         let selectedHorizon = 'Corto Plazo';
@@ -1303,6 +1426,16 @@
             else if (mins < 24 * 60) s = `${Math.floor(mins / 60)}h ${pad(mins % 60)}m`;
             else s = `${Math.round(mins / 1440)} días`;
             return diff >= 0 ? `en ${s}` : `hace ${s}`;
+        }
+
+        function formatDuration(minutes) {
+            const m = Math.round(minutes);
+            const plural = (n, a, b) => `${n} ${n === 1 ? a : b}`;
+            if (m < 60) return plural(m, 'minuto', 'minutos');
+            if (m < 1440) return plural(Math.round(m / 60), 'hora', 'horas');
+            if (m < 10080) return plural(Math.round(m / 1440), 'día', 'días');
+            if (m < 43200) return plural(Math.round(m / 10080), 'semana', 'semanas');
+            return plural(Math.round(m / 43200), 'mes', 'meses');
         }
 
         function calendarDays(iso) {
@@ -1354,21 +1487,22 @@
             const t = normalize(goal.title);
             const tpl = SUBGOAL_TEMPLATES.find(x => x.match.test(t));
             const steps = tpl ? tpl.steps : ['Aclarar el resultado esperado', 'Identificar el primer paso de 5 minutos', 'Preparar lo necesario', 'Ejecutar en un bloque de enfoque', 'Revisar y cerrar'];
-            return steps.map(title => ({ id: uid(), title, done: false, doneAt: null }));
+            return steps.map(makeSub);
         }
+        function makeSub(title) { return { id: uid(), title, done: false, doneAt: null }; }
 
-        function startPreparing(goal) {
+        function startPreparing(goal, steps = null) {
             goal.preparing = true;
-            if (!goal.subgoals.length) goal.subgoals = generateSubgoals(goal);
+            if (!goal.subgoals.length) goal.subgoals = (steps && steps.length) ? steps.map(makeSub) : generateSubgoals(goal);
             expandedGoals.add(goal.id);
-            saveState();
-            renderGoals();
         }
 
         function prepareGoal(id) {
             const goal = appState.goals.find(g => g.id === id);
             if (!goal) return;
             startPreparing(goal);
+            saveState();
+            renderGoals();
             const first = goal.subgoals.find(s => !s.done);
             coachSay(`Bien, preparación activada para «${goal.title}». Lo dividí en ${goal.subgoals.length} pasos. Empieza por: «${first ? first.title : 'revisar el plan'}».`);
         }
@@ -1376,8 +1510,15 @@
         function toLocalInputValue(d) {
             return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
         }
+        function parseLocalDue(s) {
+            if (!s) return null;
+            if (s instanceof Date) return isNaN(s) ? null : s;
+            const m = String(s).match(/^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})/);
+            if (m) return new Date(+m[1], +m[2] - 1, +m[3], +m[4], +m[5]);
+            const d = new Date(s);
+            return isNaN(d) ? null : d;
+        }
 
-        // Composer
         function toggleComposer(force) {
             const c = document.getElementById('composer');
             const open = force !== undefined ? force : !c.classList.contains('open');
@@ -1411,21 +1552,28 @@
             document.getElementById('goal-due').value = toLocalInputValue(d);
         }
 
+        function createGoal({ title, horizon = 'Corto Plazo', due = null, steps = null }) {
+            const dueDate = parseLocalDue(due);
+            const goal = makeGoal({ title, horizon, due: dueDate ? dueDate.toISOString() : null });
+            if (steps && steps.length) goal.subgoals = steps.map(makeSub);
+            if (goal.due) markPassedReminders(goal);
+            appState.goals.push(goal);
+            lastAddedId = goal.id;
+            if (goal.due) requestNotificationPermission();
+            return goal;
+        }
+
         function addNewGoal(e) {
             e.preventDefault();
             const title = document.getElementById('goal-title').value.trim();
             const dueVal = document.getElementById('goal-due').value;
             if (!title || !dueVal) return;
-            const goal = makeGoal({ title, horizon: selectedHorizon, due: new Date(dueVal).toISOString() });
-            markPassedReminders(goal);
-            appState.goals.push(goal);
-            lastAddedId = goal.id;
+            const goal = createGoal({ title, horizon: selectedHorizon, due: dueVal });
             document.getElementById('goal-title').value = '';
             resetDueInput();
             toggleComposer(false);
             saveState();
             renderGoals();
-            requestNotificationPermission();
             showToast(`Objetivo agendado · ${formatDue(goal.due)}`);
         }
 
@@ -1433,6 +1581,8 @@
             const goal = appState.goals.find(g => g.id === id);
             if (!goal) return;
             completeGoal(goal, !goal.completed);
+            saveState();
+            renderGoals();
             if (goal.completed) showToast(`✓ Cumplido: ${goal.title}`);
         }
 
@@ -1440,8 +1590,6 @@
             goal.completed = value;
             goal.completedAt = value ? new Date().toISOString() : null;
             if (value) { goal.preparing = false; lastCompletedId = goal.id; }
-            saveState();
-            renderGoals();
         }
 
         function deleteGoal(id) {
@@ -1455,7 +1603,6 @@
             if (card) { card.classList.add('removing'); setTimeout(remove, 280); } else remove();
         }
 
-        // Expandir sin re-renderizar para que la animación sea fluida
         function toggleExpand(id) {
             const card = document.getElementById('goal-' + id);
             const open = !expandedGoals.has(id);
@@ -1466,12 +1613,16 @@
             }
         }
 
+        function setSubgoalDone(sub, done = true) {
+            sub.done = done;
+            sub.doneAt = done ? new Date().toISOString() : null;
+        }
+
         function toggleSubgoal(gid, sid) {
             const goal = appState.goals.find(g => g.id === gid);
             const sub = goal && goal.subgoals.find(s => s.id === sid);
             if (!sub) return;
-            sub.done = !sub.done;
-            sub.doneAt = sub.done ? new Date().toISOString() : null;
+            setSubgoalDone(sub, !sub.done);
             saveState();
             renderGoals();
             if (sub.done && goal.subgoals.every(s => s.done) && !goal.completed) {
@@ -1486,7 +1637,7 @@
             const title = input.value.trim();
             const goal = appState.goals.find(g => g.id === gid);
             if (!title || !goal) return;
-            goal.subgoals.push({ id: uid(), title, done: false, doneAt: null });
+            goal.subgoals.push(makeSub(title));
             saveState();
             renderGoals();
             const again = document.querySelector(`#goal-${gid} form input`);
@@ -1654,12 +1805,12 @@
             </div>`;
         }
 
-        // ---------- Recordatorios inteligentes ----------
+        // ---------- Recordatorios ----------
         const REMINDER_STEPS = [
             { key: 'd1',  ms: 24 * HOUR, msg: g => `Mañana a esta hora toca «${g.title}». ¿Ya tienes claro el primer paso?` },
             { key: 'h3',  ms: 3 * HOUR,  msg: g => `Faltan unas 3 horas para «${g.title}». ¿Te estás preparando?`, askPrep: true },
             { key: 'h1',  ms: HOUR,      msg: g => g.preparing ? `Queda una hora para «${g.title}». ${nextSubText(g)}` : `Queda una hora para «${g.title}» y aún no empiezas a prepararte. ¿Arrancamos ya?`, askPrep: true },
-            { key: 'm15', ms: 15 * 60e3, msg: g => `En 15 minutos: «${g.title}». Cierra distracciones; si quieres, activa el bloqueo de apps en Configuración.` },
+            { key: 'm15', ms: 15 * 60e3, msg: g => `En 15 minutos: «${g.title}». Cierra distracciones; si quieres, pídeme que bloquee tus apps.` },
             { key: 'due', ms: 0,         msg: g => `Es la hora de «${g.title}». ¿Lo estás haciendo ahora?` }
         ];
         function nextSubText(g) {
@@ -1690,7 +1841,7 @@
                 showToast(`⏱ ${goal.title} · ${formatRelative(diff)}`);
                 fired = true;
             });
-            if (fired && isSheetOpen('sheet-hub') && hubTab === 'goals') renderGoals();
+            if (fired) refreshHub();
         }
 
         function requestNotificationPermission(explicit = false) {
@@ -1708,7 +1859,7 @@
         }
 
         // =========================================================================
-        // 8. EMOCIONES: CHECK-INS, PULSO ANÍMICO Y ESTADO PSICOLÓGICO
+        // 8. EMOCIONES, PENSAMIENTOS Y ESTADO PSICOLÓGICO
         // =========================================================================
         const ciState = { slot: 'manana', dk: null, mood: null, result: null };
 
@@ -1732,16 +1883,28 @@
             return null;
         }
 
-        function recordCheckin({ mood, intensity = 3, note = '', source = 'checkin', slot = slotFor(), dk = dayKey() }) {
+        function recordCheckin({ mood, intensity = 3, motivation = null, note = '', source = 'checkin', slot = slotFor(), dk = dayKey() }) {
             if (source === 'checkin') {
                 appState.checkins = appState.checkins.filter(c => !(c.dayKey === dk && c.slot === slot && c.source === 'checkin'));
             }
-            const entry = { id: uid(), ts: Date.now(), dayKey: dk, slot, mood, intensity, note, source };
+            const entry = { id: uid(), ts: Date.now(), dayKey: dk, slot, mood, intensity, motivation, note, source };
             appState.checkins.push(entry);
             appState.checkins.sort((a, b) => a.ts - b.ts);
-            if (appState.checkins.length > 400) appState.checkins.shift();
+            if (appState.checkins.length > 600) appState.checkins.shift();
             updateOrbTint();
             return entry;
+        }
+
+        function addThought(type, text, source = 'chat') {
+            if (!THOUGHT_TYPES[type] || !text || !text.trim()) return;
+            const now = new Date();
+            appState.thoughts.unshift({ id: uid(), ts: now.getTime(), dayKey: dayKey(now), type, text: text.trim().slice(0, 280), source });
+            if (appState.thoughts.length > 400) appState.thoughts.pop();
+        }
+
+        function thoughtsIn(days) {
+            const keys = Array.from({ length: days }, (_, i) => dayKeyOffset(-i));
+            return appState.thoughts.filter(t => keys.includes(t.dayKey));
         }
 
         function computePulse() {
@@ -1786,6 +1949,9 @@
                 slotAvg[s] = xs.length >= 2 ? xs.reduce((a, b) => a + b, 0) / xs.length : null;
             });
 
+            const mots = all.filter(c => c.motivation).slice(-5).map(c => c.motivation);
+            const motivationAvg = mots.length ? Math.round(mots.reduce((a, b) => a + b, 0) / mots.length * 10) / 10 : null;
+
             const persistent = negStreak >= 3 || negDays >= 3;
             const suggestProfessional = negStreak >= 6 || negDays >= 5;
             let state;
@@ -1812,7 +1978,7 @@
                 state = { title: 'Tensión puntual', tone: 'warn', desc: 'Los registros recientes muestran presión. Aún no es un patrón; cuida las próximas horas.' };
             }
 
-            return { pulse, state, negStreak, negDays, dist, dominant, persistent, suggestProfessional, slotAvg, total14: last14.length };
+            return { pulse, state, negStreak, negDays, dist, dominant, persistent, suggestProfessional, slotAvg, motivationAvg, total14: last14.length };
         }
 
         function computeAlignment(dk = dayKey()) {
@@ -1820,11 +1986,11 @@
             const slotsDone = new Set(todays.map(c => c.slot)).size;
             const siento = slotsDone / 3;
 
-            const thoughts = appState.thoughtLogs.filter(l => l.dayKey === dk).length;
+            const thoughtsToday = appState.thoughts.filter(t => t.dayKey === dk).length;
             const pienso = Math.min(1,
                 (appState.intentions[dk] ? 0.4 : 0) +
                 (appState.reflections[dk] ? 0.4 : 0) +
-                Math.min(thoughts, 2) * 0.1);
+                Math.min(thoughtsToday, 2) * 0.1);
 
             const sameDay = iso => iso && dayKey(new Date(iso)) === dk;
             const dueToday = appState.goals.filter(g => sameDay(g.due));
@@ -1862,14 +2028,24 @@
             const feelsBad = lastToday && MOODS[lastToday.mood].valence < 0;
             const slot = slotFor();
             const na = nextAction();
+            const th7 = thoughtsIn(7);
+            const intr7 = th7.filter(t => t.type === 'intrusivo').length;
+            const pos7 = th7.filter(t => t.type === 'positivo').length;
+            const thToday = appState.thoughts.filter(t => t.dayKey === dk).length;
 
-            if (!checkinFor(dk, slot)) out.push({ tone: 'info', text: `Te falta el check-in de la ${SLOTS[slot].label.toLowerCase()}. Sin registrar lo que sientes no puedo alinear lo que haces.` });
+            if (!checkinFor(dk, slot)) out.push({ tone: 'info', text: `Primero lo primero: ¿cómo te sientes? Te falta el check-in de la ${SLOTS[slot].label.toLowerCase()}.` });
             if (!appState.intentions[dk] && slot !== 'noche') out.push({ tone: 'info', text: 'Define tu intención del día: lo que piensas es el mapa de lo que haces.' });
 
             if (feelsGood && al.hago < 0.3) out.push({ tone: 'warn', text: `Te sientes bien pero aún no conviertes esa energía en acción. ${na ? `Empieza 10 minutos con ${na.text}.` : 'Elige una sola tarea y empieza.'}` });
             if (feelsBad && al.hago >= 0.6) out.push({ tone: 'good', text: 'Estás cumpliendo aunque bajo tensión. Eso es disciplina real; esta noche prioriza recuperarte.' });
             if (feelsBad && al.hago < 0.3) out.push({ tone: 'warn', text: `Cuando la emoción pesa, achica el paso. ${na ? `Solo 5 minutos con ${na.text}.` : 'Un paso de 5 minutos basta.'}` });
             if (slot === 'noche' && appState.intentions[dk] && al.hago < 0.5) out.push({ tone: 'warn', text: `Esta mañana pensaste: «${appState.intentions[dk]}». ¿Qué se interpuso entre la intención y la acción?` });
+
+            if (intr7 >= 3 && intr7 > pos7) out.push({ tone: 'warn', text: `Esta semana registraste ${intr7} pensamientos intrusivos y ${pos7} positivos. Al cerrar el día, anota una cosa que salió bien para equilibrar.` });
+            else if (pos7 >= 3 && pos7 >= intr7) out.push({ tone: 'good', text: `Llevas ${pos7} pensamientos positivos esta semana. Tu diálogo interno está jugando a tu favor.` });
+            if (!thToday && slot !== 'manana') out.push({ tone: 'info', text: '¿Qué pensamientos has tenido hoy? Registrar los intrusivos y los positivos me ayuda a entenderte mejor.' });
+            if (a.motivationAvg !== null && a.motivationAvg <= 2) out.push({ tone: 'warn', text: `Tu motivación reciente está baja (${a.motivationAvg}/5). No esperes a tenerla: la acción pequeña la genera.` });
+
             if (al.score >= 80) out.push({ tone: 'good', text: 'Hoy piensas, sientes y haces en la misma dirección. Así se construye el hábito.' });
 
             const slotEntries = Object.entries(a.slotAvg).filter(([, v]) => v !== null);
@@ -1879,12 +2055,8 @@
                     out.push({ tone: 'info', text: `Patrón: tus ${SLOTS[slotEntries[0][0]].label.toLowerCase()}s suelen ser tu franja más difícil. Agenda ahí tareas ligeras y una pausa.` });
                 }
             }
-            if (a.dominant && a.total14 >= 6 && a.dist[a.dominant] / a.total14 >= 0.5) {
-                const v = MOODS[a.dominant].valence;
-                out.push({ tone: v > 0 ? 'good' : v < 0 ? 'warn' : 'muted', text: `En 14 días predomina el estado ${MOODS[a.dominant].label.toLowerCase()} (${Math.round(a.dist[a.dominant] / a.total14 * 100)}%).` });
-            }
             if (!out.length) out.push({ tone: 'muted', text: 'Sigue registrando. Con más datos la lectura se vuelve más precisa.' });
-            return out.slice(0, 5);
+            return out.slice(0, 6);
         }
 
         // ---------- Check-in ----------
@@ -1896,9 +2068,14 @@
             const existing = checkinFor(dk, slot);
             document.getElementById('ci-slot').textContent = `CHECK-IN · ${SLOTS[slot].label.toUpperCase()}`;
             document.getElementById('ci-question').textContent = SLOTS[slot].question;
-            document.getElementById('ci-intensity').value = existing ? existing.intensity : 3;
-            document.getElementById('ci-int-val').textContent = `${existing ? existing.intensity : 3} / 5`;
-            document.getElementById('ci-note').value = '';
+            const intensity = existing ? existing.intensity : 3;
+            const motivation = existing && existing.motivation ? existing.motivation : 3;
+            document.getElementById('ci-intensity').value = intensity;
+            document.getElementById('ci-int-val').textContent = `${intensity} / 5`;
+            document.getElementById('ci-motivation').value = motivation;
+            document.getElementById('ci-mot-val').textContent = `${motivation} / 5`;
+            document.getElementById('ci-intrusive').value = '';
+            document.getElementById('ci-positive').value = '';
             document.getElementById('ci-extra-morning').classList.toggle('hidden', slot !== 'manana');
             document.getElementById('ci-extra-night').classList.toggle('hidden', slot !== 'noche');
             document.getElementById('ci-intention').value = appState.intentions[dk] || '';
@@ -1933,8 +2110,8 @@
             if (!ciState.mood) { showToast('Elige cómo te sientes'); return; }
             const { slot, dk } = ciState;
             const intensity = parseInt(document.getElementById('ci-intensity').value, 10) || 3;
-            const note = document.getElementById('ci-note').value.trim();
-            recordCheckin({ mood: ciState.mood, intensity, note, slot, dk });
+            const motivation = parseInt(document.getElementById('ci-motivation').value, 10) || 3;
+            recordCheckin({ mood: ciState.mood, intensity, motivation, slot, dk });
 
             if (slot === 'manana') {
                 const intention = document.getElementById('ci-intention').value.trim();
@@ -1943,11 +2120,13 @@
             if (slot === 'noche' && ciState.result) {
                 appState.reflections[dk] = { result: ciState.result, ts: Date.now() };
             }
-            if (note) logThought(note, `${MOODS[ciState.mood].label} · ${intensity}/5`, 'Check-in ' + SLOTS[slot].label.toLowerCase());
+            addThought('intrusivo', document.getElementById('ci-intrusive').value, 'checkin');
+            addThought('positivo', document.getElementById('ci-positive').value, 'checkin');
+            if (appState.awaiting && appState.awaiting.type === 'ask_mood') appState.awaiting = null;
 
             closeSheet('sheet-checkin');
             saveState();
-            if (isSheetOpen('sheet-hub') && hubTab === 'pulse') renderPulse();
+            refreshHub();
             coachSay(checkinResponse(ciState.mood, slot, intensity));
         }
 
@@ -1975,6 +2154,7 @@
             return parts.join(' ');
         }
 
+        // Pregunta proactiva al empezar cada franja: primero el ánimo, luego los pensamientos
         function checkSlotPrompt() {
             const dk = dayKey();
             const slot = slotFor();
@@ -1983,8 +2163,13 @@
             appState.promptedSlots[key] = true;
             const keys = Object.keys(appState.promptedSlots);
             if (keys.length > 60) delete appState.promptedSlots[keys[0]];
-            const extra = slot === 'manana' ? ' ¿Y qué es lo más importante que harás hoy?' : slot === 'noche' ? ' ¿Hiciste lo que pensaste hacer hoy?' : '';
-            coachSay(`${SLOTS[slot].question}${extra}`, { speak: false, notify: true });
+            const msg = {
+                manana: '¿Cómo amaneciste? Cuéntame cómo te sientes y qué es lo más importante que harás hoy.',
+                tarde: '¿Cómo va tu tarde? ¿Cómo te sientes y te has sentido motivado hoy?',
+                noche: '¿Cómo cierras el día? Cuéntame cómo te sientes y qué pensamientos tuviste hoy, positivos o intrusivos.'
+            }[slot];
+            appState.awaiting = { type: 'ask_mood' };
+            coachSay(msg, { notify: true });
         }
 
         // ---------- Render Pulso ----------
@@ -2001,7 +2186,6 @@
             }).join('');
             return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">${circles}${center}</svg>`;
         }
-        // Los anillos se "llenan" al abrir, como en el reloj
         function animateRings(root) {
             requestAnimationFrame(() => requestAnimationFrame(() => {
                 root.querySelectorAll('.ring-progress').forEach(el => el.setAttribute('stroke-dashoffset', el.dataset.off));
@@ -2031,7 +2215,7 @@
             ], 120, 11, 3);
             document.getElementById('align-score').textContent = `${al.score}%`;
             const legend = [
-                ['Pienso', al.pienso, RING_COLORS.pienso, 'intención + reflexión'],
+                ['Pienso', al.pienso, RING_COLORS.pienso, 'intención, reflexión y pensamientos'],
                 ['Siento', al.siento, RING_COLORS.siento, `${al.slotsDone}/3 check-ins`],
                 ['Hago', al.hago, RING_COLORS.hago, al.dueToday ? `${al.dueToday} objetivo(s) hoy` : 'pasos y enfoque']
             ];
@@ -2054,7 +2238,7 @@
                 return `<button ${available ? `onclick="openCheckin('${s}')"` : 'disabled'} class="p-3 rounded-2xl border text-left transition-colors ${available ? 'hover:bg-white/[0.06]' : 'opacity-35 cursor-not-allowed'}" style="border-color:${m ? m.color + '88' : 'rgba(255,255,255,0.12)'}; background:${m ? m.color + '14' : 'transparent'}">
                     <span class="text-[10px] uppercase tracking-widest text-white/45 block">${SLOTS[s].icon} ${SLOTS[s].label}</span>
                     <span class="text-sm block mt-1" style="color:${m ? m.color : 'rgba(255,255,255,0.4)'}">${m ? m.label : (available ? 'Pendiente' : 'Más tarde')}</span>
-                    ${c ? `<span class="text-[10px] font-mono text-white/40">${c.intensity}/5 · ${new Date(c.ts).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}</span>` : ''}
+                    ${c ? `<span class="text-[10px] font-mono text-white/40">${c.intensity}/5${c.motivation ? ` · mot ${c.motivation}` : ''}</span>` : ''}
                 </button>`;
             }).join('');
 
@@ -2111,110 +2295,316 @@
                         <span class="font-mono text-white/50 ml-1">${Math.round(n / total * 100)}%</span></div>`).join('')}
                 </div>` : `<p class="text-xs text-white/40">Aún no hay registros.</p>`;
 
-            const logs = appState.thoughtLogs.slice(0, 12);
-            document.getElementById('thought-log-list').innerHTML = logs.length ? logs.map(log => `
-                <div class="card p-3.5 rounded-2xl flex flex-col gap-1.5">
-                    <div class="flex items-center justify-between text-[10px] font-mono text-white/40">
-                        <span>${escapeHTML(log.time)}</span>
-                        <span class="px-2 py-0.5 rounded-full border border-white/15 text-white/80">${escapeHTML(log.emotion)}</span>
+            // Pensamientos (solo los reales, no toda la conversación)
+            const th7 = thoughtsIn(7);
+            const nIntr = th7.filter(t => t.type === 'intrusivo').length;
+            const nPos = th7.filter(t => t.type === 'positivo').length;
+            document.getElementById('thought-counts').innerHTML =
+                `<span style="color:${THOUGHT_TYPES.intrusivo.color}">● ${nIntr}</span> &nbsp; <span style="color:${THOUGHT_TYPES.positivo.color}">● ${nPos}</span>`;
+            document.getElementById('thought-list').innerHTML = th7.length ? th7.slice(0, 10).map(t => `
+                <div class="flex gap-3 items-start">
+                    <span class="mt-1.5 w-2 h-2 rounded-full shrink-0" style="background:${THOUGHT_TYPES[t.type].color}"></span>
+                    <div class="min-w-0 flex-1">
+                        <p class="text-xs text-white/85 font-light leading-relaxed">${escapeHTML(t.text)}</p>
+                        <span class="text-[10px] font-mono text-white/35">${THOUGHT_TYPES[t.type].label} · ${dayLabel(t.dayKey)} ${new Date(t.ts).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}</span>
                     </div>
-                    <p class="text-xs text-white/90 font-light"><strong class="font-medium text-white">Pienso:</strong> "${escapeHTML(log.thought)}"</p>
-                    <p class="text-[11px] text-white/50"><strong class="font-normal text-white/70">Hago:</strong> ${escapeHTML(log.action)}</p>
-                </div>`).join('') : `<p class="text-xs text-white/40">Lo que compartas con el orbe aparecerá aquí.</p>`;
+                </div>`).join('') : `<p class="text-xs text-white/40">Cuando compartas un pensamiento intrusivo o positivo, el coach lo registrará aquí.</p>`;
+
+            // Historial de conversaciones por día
+            const byDay = {};
+            appState.chatHistory.forEach(m => {
+                const k = dayKey(new Date(m.timestamp || Date.now()));
+                (byDay[k] = byDay[k] || []).push(m);
+            });
+            const dayKeys = Object.keys(byDay).sort().reverse().slice(0, 10);
+            document.getElementById('convo-history').innerHTML = dayKeys.length ? dayKeys.map(k => {
+                const msgs = byDay[k];
+                const firstUser = msgs.find(m => m.sender === 'user');
+                const voiceCount = msgs.filter(m => m.via === 'voice').length;
+                return `<button onclick="openChatAtDay('${k}')" class="card w-full rounded-2xl px-4 py-3 text-left hover:bg-white/[0.05] transition-colors">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs capitalize">${dayLabel(k)}</span>
+                        <span class="text-[10px] font-mono text-white/40">${msgs.length} mensajes${voiceCount ? ` · ${voiceCount} por voz` : ''}</span>
+                    </div>
+                    <p class="text-[11px] text-white/45 mt-1 truncate">${firstUser ? escapeHTML(firstUser.text) : 'Solo mensajes del coach'}</p>
+                </button>`;
+            }).join('') : `<p class="text-xs text-white/40">Aún no hay conversaciones.</p>`;
 
             animateRings(document.getElementById('pane-pulse'));
         }
 
-        function logThought(thought, emotion, action) {
+        function openChatAtDay(dk) {
+            closeSheet('sheet-hub');
+            setTimeout(() => {
+                openChat();
+                setTimeout(() => {
+                    const sep = document.getElementById('day-' + dk);
+                    if (sep) sep.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 650);
+            }, 250);
+        }
+
+        // =========================================================================
+        // 9. IA (OpenAI vía Vercel) + MOTOR LOCAL DE RESPALDO
+        // =========================================================================
+        let aiStatus = 'unknown'; // unknown | online | offline
+        let aiCheckedAt = 0;
+        let aiRefs = { goals: {}, subs: {} };
+
+        function localISO(d = new Date()) {
+            const off = -d.getTimezoneOffset();
+            const sign = off >= 0 ? '+' : '-';
+            return `${toLocalInputValue(d)}:${pad(d.getSeconds())}${sign}${pad(Math.floor(Math.abs(off) / 60))}:${pad(Math.abs(off) % 60)}`;
+        }
+
+        // Todo lo recolectado se resume para que la IA conozca el comportamiento y el estado de ánimo
+        function buildAIContext() {
             const now = new Date();
-            appState.thoughtLogs.unshift({
-                id: uid(), ts: now.getTime(), dayKey: dayKey(now),
-                time: now.toLocaleString('es-ES', { weekday: 'short', hour: '2-digit', minute: '2-digit' }),
-                thought, emotion, action
-            });
-            if (appState.thoughtLogs.length > 80) appState.thoughtLogs.pop();
-        }
-
-        // =========================================================================
-        // 9. MOTOR COGNITIVO: GEMINI (OPCIONAL) + MOTOR LOCAL
-        // =========================================================================
-        async function processUserMessage(userText) {
-            setOrbState('thinking');
-            showTyping();
-            let analysis = null;
-            if (GEMINI_API_KEY) {
-                try { analysis = await askGemini(userText); } catch (e) { console.warn('Gemini no disponible, usando motor local', e); }
-            }
-            if (!analysis) {
-                await new Promise(r => setTimeout(r, 650));
-                analysis = runLocalEngine(userText);
-            }
-            hideTyping();
-            applyAnalysis(userText, analysis);
-        }
-
-        async function askGemini(userText) {
+            const dk = dayKey();
+            const slot = slotFor();
             const a = analyzeMood();
-            const goalsContext = pendingGoals().slice(0, 6).map(g => {
+            const al = computeAlignment();
+            const last = latestCheckin();
+            aiRefs = { goals: {}, subs: {} };
+
+            const goals = pendingGoals().slice(0, 15).map((g, i) => {
+                const ref = 'g' + (i + 1);
+                aiRefs.goals[ref] = g.id;
                 const t = goalTiming(g);
-                const subs = g.subgoals.length ? ` [pasos: ${g.subgoals.map(s => (s.done ? '✓' : '○') + s.title).join('; ')}]` : '';
-                return `- id:${g.id} «${g.title}» (${g.horizon}, ${g.due ? formatDue(g.due) + ', ' + t.label : 'sin fecha'})${g.preparing ? ' PREPARÁNDOSE' : ''}${subs}`;
-            }).join('\n') || 'Sin objetivos pendientes.';
-
-            const systemPrompt = `Eres AETHER, un coach cognitivo-conductual minimalista en español. Ayudas a alinear lo que la persona piensa, siente y hace, y a crear hábitos de ejecución. No diagnosticas ni reemplazas a un psicólogo.
-Contexto actual:
-- Franja: ${SLOTS[slotFor()].label}. Pulso anímico: ${a.pulse ?? 'sin datos'}. Estado: ${a.state.title}${a.persistent ? ' (PERSISTENTE)' : ''}.
-- Intención de hoy: ${appState.intentions[dayKey()] || 'no definida'}.
-- Objetivos pendientes:
-${goalsContext}
-Reglas: responde en máximo 2-3 oraciones, natural para voz, empática y directa. Si el usuario se está preparando para un objetivo, guíalo al siguiente paso concreto. Si el malestar es persistente, sugiere apoyo profesional con suavidad.
-Responde SOLO con JSON:
-{"reply":"...","mood":"positivo|relajado|neutro|estresado|ansioso|null","intensity":1-5,"focusStatus":"Enfocado|Disperso","extractedThought":"...","recommendedAction":"...","suggestBlocker":false,"completedGoalId":null,"preparingGoalId":null}`;
-
-            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${GEMINI_API_KEY}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [
-                        ...appState.chatHistory.slice(-8, -1).map(m => ({ role: m.sender === 'user' ? 'user' : 'model', parts: [{ text: m.text }] })),
-                        { role: 'user', parts: [{ text: userText }] }
-                    ],
-                    systemInstruction: { parts: [{ text: systemPrompt }] },
-                    generationConfig: { responseMimeType: 'application/json' }
-                })
+                return {
+                    ref, titulo: g.title, horizonte: g.horizon,
+                    fecha: g.due ? toLocalInputValue(new Date(g.due)) : null,
+                    estado: t.label, preparando: g.preparing,
+                    pasos: g.subgoals.map((s, j) => {
+                        const sref = `${ref}.s${j + 1}`;
+                        aiRefs.subs[sref] = { gid: g.id, sid: s.id };
+                        return { ref: sref, titulo: s.title, hecho: s.done };
+                    })
+                };
             });
-            if (!res.ok) throw new Error('HTTP ' + res.status);
-            const data = await res.json();
-            const raw = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-            const p = JSON.parse(raw);
-            const findGoal = id => id ? appState.goals.find(g => String(g.id) === String(id)) : null;
+
+            const slotAvg = Object.entries(a.slotAvg).filter(([, v]) => v !== null).sort((x, y) => x[1] - y[1]);
+            const awaitingGoal = appState.awaiting && appState.awaiting.goalId ? appState.goals.find(g => g.id === appState.awaiting.goalId) : null;
+
             return {
-                reply: p.reply,
-                mood: MOODS[p.mood] ? p.mood : null,
-                intensity: clamp(parseInt(p.intensity, 10) || 3, 1, 5),
-                focusStatus: p.focusStatus,
-                extractedThought: p.extractedThought || userText,
-                recommendedAction: p.recommendedAction || '',
-                suggestBlocker: !!p.suggestBlocker,
-                completeGoal: findGoal(p.completedGoalId),
-                prepareGoal: findGoal(p.preparingGoalId)
+                ahora: localISO(now),
+                diaSemana: now.toLocaleDateString('es-ES', { weekday: 'long' }),
+                zonaHoraria: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                franja: SLOTS[slot].label,
+                animoRegistradoEnEstaFranja: !!checkinFor(dk, slot),
+                ultimoAnimo: last ? { estado: MOODS[last.mood].label, intensidad: last.intensity, motivacion: last.motivation, haceMinutos: Math.round((Date.now() - last.ts) / 60000) } : null,
+                checkinsHoy: appState.checkins.filter(c => c.dayKey === dk).map(c => ({ franja: SLOTS[c.slot].label, animo: MOODS[c.mood].label, intensidad: c.intensity, motivacion: c.motivation })),
+                pulsoAnimico: a.pulse,
+                estadoPsicologico: a.state.title,
+                estadoPersistente: a.persistent,
+                sugerirApoyoProfesional: a.suggestProfessional,
+                distribucionAnimo14d: a.dist,
+                franjaMasDificil: slotAvg.length >= 2 ? SLOTS[slotAvg[0][0]].label : null,
+                motivacionPromedio: a.motivationAvg,
+                intencionHoy: appState.intentions[dk] || null,
+                reflexionHoy: appState.reflections[dk] ? appState.reflections[dk].result : null,
+                pensamientosHoy: appState.thoughts.filter(t => t.dayKey === dk).map(t => ({ tipo: t.type, texto: t.text })),
+                pensamientosRecientes: thoughtsIn(7).slice(0, 12).map(t => ({ tipo: t.type, texto: t.text, dia: dayLabel(t.dayKey) })),
+                objetivosPendientes: goals,
+                cumplidosUltimos7Dias: appState.goals.filter(g => g.completedAt && Date.now() - new Date(g.completedAt).getTime() < 7 * 24 * HOUR).map(g => g.title),
+                alineacionHoy: { total: al.score, pienso: Math.round(al.pienso * 100), siento: Math.round(al.siento * 100), hago: Math.round(al.hago * 100) },
+                rachaAlineacion: computeStreak(),
+                sesionesEnfoqueHoy: appState.focusSessions.filter(f => f.dayKey === dk).length,
+                apps: appState.blockedApps.map(x => x.name),
+                bloqueosActivos: appState.appBlocks.map(b => ({ apps: b.apps, hasta: toLocalInputValue(new Date(b.until)) })),
+                preguntaPendienteDelCoach: appState.awaiting ? { tipo: appState.awaiting.type, objetivo: awaitingGoal ? awaitingGoal.title : null } : null
             };
         }
 
+        async function callAI() {
+            if (aiStatus === 'offline' && Date.now() - aiCheckedAt < 2 * 60e3) return null;
+            const messages = appState.chatHistory.slice(-24).map(m => ({ role: m.sender === 'user' ? 'user' : 'assistant', content: m.text }));
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), 25000);
+            try {
+                const res = await fetch(AI_ENDPOINT, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ messages, context: buildAIContext() }),
+                    signal: controller.signal
+                });
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                const data = await res.json();
+                if (!data || typeof data.reply !== 'string') throw new Error('Respuesta inválida');
+                setAIStatus('online');
+                return data;
+            } catch (e) {
+                console.warn('IA no disponible, usando motor local:', e.message);
+                setAIStatus('offline');
+                return null;
+            } finally {
+                clearTimeout(timer);
+            }
+        }
+
+        function setAIStatus(s) {
+            aiStatus = s;
+            aiCheckedAt = Date.now();
+            document.getElementById('ai-mode-label').textContent = s === 'online' ? 'IA conectada · historial' : 'Modo local · historial';
+            if (isSheetOpen('sheet-settings')) renderSettings();
+        }
+
+        async function processUserMessage(userText, via) {
+            setOrbState('thinking');
+            if (isChatOpen()) showTyping();
+            let result = await callAI();
+            if (result) {
+                appState.awaiting = null; // la IA maneja el hilo con el historial
+            } else {
+                await new Promise(r => setTimeout(r, 550));
+                result = runLocalEngine(userText);
+            }
+            hideTyping();
+            applyResult(userText, result, via);
+        }
+
+        // ---------- Ejecutor de acciones (comandos interpretados por la IA o el motor local) ----------
+        function resolveGoal(a) {
+            if (a.goal) return a.goal;
+            if (a.goal_ref && aiRefs.goals[a.goal_ref]) return appState.goals.find(g => g.id === aiRefs.goals[a.goal_ref]) || null;
+            if (a.title) return matchGoal(normalize(a.title));
+            return null;
+        }
+        function resolveSub(a) {
+            if (a.sub && a.goal) return { goal: a.goal, sub: a.sub };
+            const r = a.subgoal_ref && aiRefs.subs[a.subgoal_ref];
+            if (!r) return null;
+            const goal = appState.goals.find(g => g.id === r.gid);
+            const sub = goal && goal.subgoals.find(s => s.id === r.sid);
+            return sub ? { goal, sub } : null;
+        }
+
+        function executeActions(actions) {
+            const notes = [];
+            (actions || []).forEach(a => {
+                try {
+                    switch (a.type) {
+                        case 'add_goal': {
+                            if (!a.title) break;
+                            const g = createGoal({ title: a.title, horizon: a.horizon || 'Corto Plazo', due: a.due, steps: a.steps });
+                            notes.push(`Agendado: ${g.title}${g.due ? ' · ' + formatDue(g.due) : ''}`);
+                            break;
+                        }
+                        case 'complete_goal': {
+                            const g = resolveGoal(a);
+                            if (g && !g.completed) { completeGoal(g, true); notes.push(`✓ Cumplido: ${g.title}`); }
+                            break;
+                        }
+                        case 'complete_subgoal': {
+                            const r = resolveSub(a);
+                            if (r && !r.sub.done) { setSubgoalDone(r.sub, true); notes.push(`✓ Paso: ${r.sub.title}`); }
+                            break;
+                        }
+                        case 'prepare_goal': {
+                            const g = resolveGoal(a);
+                            if (g && !g.completed) { startPreparing(g, a.steps); notes.push(`Preparación: ${g.title}`); }
+                            break;
+                        }
+                        case 'add_subgoals': {
+                            const g = resolveGoal(a);
+                            if (g && a.steps && a.steps.length) { g.subgoals.push(...a.steps.map(makeSub)); expandedGoals.add(g.id); notes.push(`Pasos añadidos a ${g.title}`); }
+                            break;
+                        }
+                        case 'reschedule_goal': {
+                            const g = resolveGoal(a);
+                            const d = parseLocalDue(a.due);
+                            if (g && d) { g.due = d.toISOString(); g.reminders = {}; markPassedReminders(g); notes.push(`Reprogramado: ${g.title} · ${formatDue(g.due)}`); }
+                            break;
+                        }
+                        case 'delete_goal': {
+                            const g = resolveGoal(a);
+                            if (g) { appState.goals = appState.goals.filter(x => x.id !== g.id); notes.push(`Eliminado: ${g.title}`); }
+                            break;
+                        }
+                        case 'block_apps': {
+                            const mins = clamp(parseInt(a.duration_minutes, 10) || 60, 5, 60 * 24 * 366);
+                            const b = scheduleBlock(a.apps, mins);
+                            notes.push(`🔒 ${b.apps.join(', ')} · ${formatDuration(mins)}`);
+                            break;
+                        }
+                        case 'unblock_apps': {
+                            const n = removeBlocks(a.apps);
+                            if (n) notes.push('Bloqueo retirado');
+                            break;
+                        }
+                        case 'start_focus': {
+                            const mins = clamp(parseInt(a.duration_minutes, 10) || 25, 5, 180);
+                            setTimeout(() => activateStrictFocusMode(mins), 900);
+                            break;
+                        }
+                        case 'set_intention': {
+                            if (a.text) { appState.intentions[dayKey()] = a.text; notes.push('Intención del día guardada'); }
+                            break;
+                        }
+                    }
+                } catch (e) { console.warn('Acción fallida', a, e); }
+            });
+            return notes;
+        }
+
+        function applyResult(userText, r, via) {
+            const dk = dayKey();
+            const slot = slotFor();
+            if (r.focus) appState.focusState = r.focus;
+
+            if (r.mood && MOODS[r.mood]) {
+                recordCheckin({
+                    mood: r.mood,
+                    intensity: clamp(parseInt(r.intensity, 10) || 3, 1, 5),
+                    motivation: r.motivation ? clamp(parseInt(r.motivation, 10), 1, 5) : null,
+                    source: checkinFor(dk, slot) ? 'chat' : 'checkin',
+                    slot
+                });
+                if (appState.awaiting && appState.awaiting.type === 'ask_mood') appState.awaiting = null;
+            } else if (r.motivation) {
+                const c = checkinFor(dk, slot);
+                if (c) c.motivation = clamp(parseInt(r.motivation, 10), 1, 5);
+            }
+
+            (r.thoughts || []).forEach(t => addThought(t.type, t.text, via === 'voice' ? 'voz' : 'chat'));
+            const notes = executeActions(r.actions);
+
+            appendMessage('ai', r.reply, via);
+            saveState();
+            refreshHub();
+            if (isSheetOpen('sheet-settings')) renderSettings();
+
+            if (via === 'voice') {
+                showSubtitle(r.reply, 'ai');
+                speakText(r.reply); // solo el modo voz lee las respuestas
+            } else {
+                setOrbState('idle');
+            }
+            if (notes.length) setTimeout(() => showToast(notes.join(' · ')), 400);
+        }
+
+        // ---------- Motor local (sin internet / sin servidor) ----------
         function detectMood(t) {
             if (/no (estoy|me siento) (muy |tan )?(tranquil|relajad|calmad)/.test(t)) return 'ansioso';
-            if (/(ansios|ansiedad|nervios|miedo|angusti|preocupad|preocupa|inquiet|panico|intranquil|dudoso|insegur)/.test(t)) return 'ansioso';
+            if (/(ansios|ansiedad|nervios|miedo|angusti|preocupad|preocupa|inquiet|panico|intranquil|insegur)/.test(t)) return 'ansioso';
             if (/(estres|abrumad|agobi|presion|cansad|agotad|saturad|tens[oa]\b|irritad|enojad|frustrad|no puedo|no doy mas|\bmal\b|triste|desenfocad|harto)/.test(t)
                 || /no (me siento |estoy |ando )?(muy |tan )?bien/.test(t)) return 'estresado';
+            if (/(desmotiv|sin ganas|no tengo ganas)/.test(t)) return null;
             if (/(neutro|normal|estable|mas o menos|regular|ahi vamos|ni bien ni mal)/.test(t)) return 'neutro';
             if (/(tranquil|relajad|calma|seren|en paz|descansad)/.test(t)) return 'relajado';
-            if (/(bien|feliz|motivad|genial|excelente|content|energia|enfocad|alegre|positiv|animad|con ganas)/.test(t)) return 'positivo';
+            if (/(\bbien\b|feliz|motivad|genial|excelente|content|energia|enfocad|alegre|positiv|animad|con ganas)/.test(t)) return 'positivo';
             return null;
         }
         function detectIntensity(t) {
             if (/(muy|demasiad|super|bastante|mucho|extrem|full|horrible)/.test(t)) return 5;
             if (/(un poco|algo|leve|medio|un tanto)/.test(t)) return 2;
             return 3;
+        }
+        function detectMotivation(t) {
+            if (/(desmotiv|sin ganas|no tengo ganas|flojera|pereza)/.test(t)) return 2;
+            if (/(muy motivad|con muchas ganas|a full)/.test(t)) return 5;
+            if (/(motivad|con ganas|animad)/.test(t)) return 4;
+            return null;
         }
 
         function matchGoal(t, list = pendingGoals()) {
@@ -2258,7 +2648,7 @@ Responde SOLO con JSON:
 
         function extractGoalTitle(text) {
             let s = text
-                .replace(/^(por favor\s+)?(recu[eé]rdame|recordarme|ag[eé]nda(me)?|agendar|programa(r)?|tengo que|debo|necesito)\s+(que\s+)?(tengo que\s+|debo\s+)?/i, '')
+                .replace(/^(por favor\s+)?(recu[eé]rdame|recordarme|ag[eé]nda(me)?|agendar|agrega(r)?|añade|programa(r)?|tengo que|debo|necesito)\s+(que\s+)?(tengo que\s+|debo\s+)?/i, '')
                 .replace(/\b(pasado\s+)?ma[nñ]ana\b/gi, '')
                 .replace(/\bhoy\b/gi, '')
                 .replace(/\bel\s+(lunes|martes|mi[eé]rcoles|jueves|viernes|s[aá]bado|domingo)\b/gi, '')
@@ -2268,168 +2658,209 @@ Responde SOLO con JSON:
             return s ? s.charAt(0).toUpperCase() + s.slice(1) : '';
         }
 
+        const NUM_WORDS = { un: 1, una: 1, uno: 1, dos: 2, tres: 3, cuatro: 4, cinco: 5, seis: 6, siete: 7, ocho: 8, nueve: 9, diez: 10, doce: 12, quince: 15, veinte: 20, treinta: 30, media: 0.5 };
+        const APP_ALIASES = { instagram: 'Instagram', insta: 'Instagram', tiktok: 'TikTok', 'tik tok': 'TikTok', whatsapp: 'WhatsApp', youtube: 'YouTube', twitter: 'X / Twitter', facebook: 'Facebook', netflix: 'Netflix', snapchat: 'Snapchat', telegram: 'Telegram', reddit: 'Reddit', juegos: 'Juegos', twitch: 'Twitch' };
+
+        function parseBlockCommand(t) {
+            if (!/(bloque|restring|no me dejes (usar|entrar|abrir)|quitame)/.test(t) || /desbloque/.test(t)) return null;
+            const m = t.match(/(\d+|un|una|uno|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|doce|quince|veinte|treinta|media)\s*(minutos?|min\b|horas?|dias?|semanas?|mes(es)?)/);
+            let minutes = 60;
+            if (m) {
+                const n = /^\d+$/.test(m[1]) ? parseInt(m[1], 10) : NUM_WORDS[m[1]];
+                const unit = m[2].startsWith('min') ? 1 : m[2].startsWith('hora') ? 60 : m[2].startsWith('dia') ? 1440 : m[2].startsWith('semana') ? 10080 : 43200;
+                minutes = Math.max(5, Math.round(n * unit));
+            } else if (/todo el dia|hoy/.test(t)) {
+                const end = new Date(); end.setHours(23, 59, 0, 0);
+                minutes = Math.max(30, Math.round((end - Date.now()) / 60000));
+            }
+            const apps = [];
+            Object.entries(APP_ALIASES).forEach(([k, name]) => { if (t.includes(k) && !apps.includes(name)) apps.push(name); });
+            if (/\bx\b/.test(t) && !apps.includes('X / Twitter')) apps.push('X / Twitter');
+            return { apps: /(redes|todas|todo)/.test(t) || !apps.length ? [] : apps, minutes };
+        }
+
         function runLocalEngine(text) {
             const t = normalize(text);
-            const res = {
-                reply: '', mood: detectMood(t), intensity: detectIntensity(t),
-                focusStatus: null, extractedThought: text.length > 90 ? text.slice(0, 90) + '…' : text,
-                recommendedAction: '', suggestBlocker: false,
-                completeGoal: null, prepareGoal: null, newGoal: null
-            };
+            const out = { reply: '', mood: detectMood(t), intensity: detectIntensity(t), motivation: detectMotivation(t), focus: null, thoughts: [], actions: [] };
+            const replies = [];
             const awaiting = appState.awaiting;
             const affirmative = /^(si|claro|ya|dale|ok|okay|listo|de una|voy|correcto|exacto|por supuesto|obvio)\b/.test(t);
-            const negative = /^(no|todavia|aun no|nada|nop)\b/.test(t);
+            const negative = /^(no|todavia|aun no|nada|nop|ninguno|ningun)\b/.test(t);
+            const dk = dayKey();
+            const slot = slotFor();
+            const moodKnown = !!checkinFor(dk, slot);
             const na = nextAction();
+            if (awaiting && awaiting.type === 'ask_mood') appState.awaiting = null;
 
+            const finish = () => {
+                const stillAsking = appState.awaiting && appState.awaiting.type !== 'ask_mood';
+                if (!moodKnown && !out.mood && !stillAsking) {
+                    // Regla: primero saber cómo se siente
+                    replies.push('Antes de seguir, ¿cómo te sientes ahora mismo? ¿Positivo, relajado, neutro, estresado o ansioso?');
+                    appState.awaiting = { type: 'ask_mood' };
+                } else if (out.mood && !moodKnown && slot !== 'manana' && !stillAsking && !appState.thoughts.some(x => x.dayKey === dk)) {
+                    replies.push('¿Has tenido algún pensamiento intrusivo en el transcurso del día?');
+                    appState.awaiting = { type: 'ask_intrusive' };
+                }
+                out.reply = replies.join(' ').trim() || 'Te escucho.';
+                return out;
+            };
+
+            // A) Respuestas a preguntas pendientes
             if (awaiting) {
-                const g = appState.goals.find(x => x.id === awaiting.goalId);
-                if (g && !g.completed && (affirmative || negative)) {
+                const g = awaiting.goalId ? appState.goals.find(x => x.id === awaiting.goalId) : null;
+                if (awaiting.type === 'complete' && g && !g.completed && (affirmative || negative)) {
                     appState.awaiting = null;
-                    if (awaiting.type === 'complete') {
-                        if (affirmative) { res.completeGoal = g; res.reply = `Hecho. «${g.title}» queda cumplido. Así se construye el hábito: pensar, sentir y hacer en la misma dirección.`; }
-                        else res.reply = 'Perfecto, lo dejo abierto. Dime si falta algún paso y lo agrego.';
-                        return res;
-                    }
+                    if (affirmative) { out.actions.push({ type: 'complete_goal', goal: g }); replies.push(`Hecho. «${g.title}» queda cumplido. Así se construye el hábito.`); }
+                    else replies.push('Perfecto, lo dejo abierto. Dime si falta algún paso y lo agrego.');
+                    return finish();
+                }
+                if ((awaiting.type === 'prep' || awaiting.type === 'doing') && g && !g.completed && (affirmative || negative)) {
+                    appState.awaiting = null;
                     if (affirmative) {
-                        res.prepareGoal = g;
-                        res.reply = awaiting.type === 'doing' ? `Excelente. Mantente en «${g.title}»; si quieres, activa el bloqueo de apps mientras lo terminas.` : null;
+                        out.actions.push({ type: 'prepare_goal', goal: g });
+                        startPreparingPreview(g);
+                        const first = g.subgoals.find(s => !s.done);
+                        replies.push(awaiting.type === 'doing' ? `Excelente. Mantente en «${g.title}».` : `Bien, te acompaño con «${g.title}».`);
+                        if (first) replies.push(`Siguiente paso: «${first.title}».`);
                     } else {
-                        res.reply = `Entiendo. ¿Qué te está frenando con «${g.title}»? Hagamos el primer paso tan pequeño que no puedas decir que no.`;
-                        res.focusStatus = 'Disperso';
-                        res.suggestBlocker = true;
+                        replies.push(`Entiendo. ¿Qué te está frenando con «${g.title}»? Hagamos el primer paso tan pequeño que no puedas decir que no.`);
+                        out.focus = 'Disperso';
                     }
-                    if (res.reply) return res;
+                    return finish();
+                }
+                if (awaiting.type === 'ask_intrusive') {
+                    appState.awaiting = { type: 'ask_positive' };
+                    if (negative) replies.push('Bien, mente despejada. ¿Y qué pensamiento positivo tuviste hoy?');
+                    else { out.thoughts.push({ type: 'intrusivo', text }); replies.push('Gracias por compartirlo. Ponerle nombre le quita fuerza: un pensamiento no es un hecho. ¿Y qué pensamiento positivo tuviste hoy?'); }
+                    return finish();
+                }
+                if (awaiting.type === 'ask_positive') {
+                    appState.awaiting = null;
+                    if (negative) replies.push('Está bien. Mañana busquemos al menos una cosa que salga bien.');
+                    else { out.thoughts.push({ type: 'positivo', text }); replies.push('Eso cuenta. Lo guardo en tus pensamientos positivos.'); }
+                    if (na) replies.push(`Ahora, volvamos a la acción: ${na.text}.`);
+                    return finish();
                 }
             }
 
-            if (/(recuerdame|recordarme|agendame|agendar|agenda |programa|tengo que|debo |necesito )/.test(t)) {
+            // B) Comandos
+            if (/(desbloque|quita(r)? el bloqueo)/.test(t)) {
+                out.actions.push({ type: 'unblock_apps', apps: [] });
+                replies.push('Bloqueo retirado. Recuerda por qué lo pusiste.');
+                return finish();
+            }
+            const block = parseBlockCommand(t);
+            if (block) {
+                out.actions.push({ type: 'block_apps', apps: block.apps, duration_minutes: block.minutes });
+                replies.push(`Listo: ${block.apps.length ? block.apps.join(', ') : 'tus apps distractoras'} bloqueadas por ${formatDuration(block.minutes)}. Lo registro como compromiso.`);
+                return finish();
+            }
+            const focusM = t.match(/(modo enfoque|pomodoro|concentrarme|enfocarme).*?(\d+)\s*min/);
+            if (focusM || /^(activa|inicia|empieza).*(modo enfoque|pomodoro)/.test(t)) {
+                const mins = focusM ? parseInt(focusM[2], 10) : 25;
+                out.actions.push({ type: 'start_focus', duration_minutes: mins });
+                replies.push(`Activando modo enfoque por ${mins} minutos. A lo tuyo.`);
+                return finish();
+            }
+            if (/(recuerdame|recordarme|agendame|agendar|agenda |agrega|anade|programa|tengo que|debo |necesito )/.test(t)) {
                 const when = parseWhen(t);
                 const title = extractGoalTitle(text);
                 if (when && title.length > 2) {
-                    res.newGoal = { title, due: when.toISOString() };
-                    res.reply = `Agendado: «${title}» para ${formatDue(res.newGoal.due).toLowerCase()}. Te avisaré cuando se acerque y te ayudaré a prepararte.`;
-                    return res;
+                    out.actions.push({ type: 'add_goal', title, due: when });
+                    replies.push(`Agendado: «${title}» para ${formatDue(when.toISOString()).toLowerCase()}. Te avisaré cuando se acerque.`);
+                    return finish();
                 }
             }
-
             if (/(preparando|me preparo|alistando|alistar|voy a empezar|empezando|arrancando|comenzando)/.test(t)) {
                 const g = matchGoal(t) || pendingGoals()[0];
-                if (g) { res.prepareGoal = g; res.focusStatus = 'Enfocado'; return res; }
+                if (g) {
+                    out.actions.push({ type: 'prepare_goal', goal: g });
+                    startPreparingPreview(g);
+                    const first = g.subgoals.find(s => !s.done);
+                    const tm = goalTiming(g);
+                    replies.push(`Perfecto, te acompaño a prepararte para «${g.title}»${g.due ? ` (${formatRelative(tm.diff)})` : ''}. Son ${g.subgoals.length} pasos; empieza por «${first ? first.title : 'revisar el plan'}».`);
+                    out.focus = 'Enfocado';
+                    return finish();
+                }
             }
-
             if (/(termine|ya hice|ya lo hice|cumpli|complete|entregue|lo hice|acabe|ya quedo|finalice|hecho)/.test(t)) {
-                const subMatch = (() => {
-                    for (const g of pendingGoals()) {
-                        const s = g.subgoals.find(x => !x.done && matchGoal(t, [{ title: x.title }]));
-                        if (s) return { g, s };
-                    }
-                    return null;
-                })();
+                let subMatch = null;
+                for (const g of pendingGoals()) {
+                    const s = g.subgoals.find(x => !x.done && matchGoal(t, [{ title: x.title }]));
+                    if (s) { subMatch = { g, s }; break; }
+                }
                 const g = matchGoal(t);
                 if (g) {
-                    res.completeGoal = g;
+                    out.actions.push({ type: 'complete_goal', goal: g });
                     const next = pendingGoals().filter(x => x.id !== g.id)[0];
-                    res.reply = `Excelente ejecución: «${g.title}» cumplido. ${next ? `Lo siguiente es «${next.title}» (${next.due ? formatDue(next.due).toLowerCase() : 'sin fecha'}).` : 'Estás al día con todo.'}`;
+                    replies.push(`Excelente ejecución: «${g.title}» cumplido.${next ? ` Lo siguiente es «${next.title}»${next.due ? ` (${formatDue(next.due).toLowerCase()})` : ''}.` : ' Estás al día con todo.'}`);
                 } else if (subMatch) {
-                    subMatch.s.done = true;
-                    subMatch.s.doneAt = new Date().toISOString();
-                    const nextSub = subMatch.g.subgoals.find(x => !x.done);
-                    res.reply = `Paso completado: «${subMatch.s.title}». ${nextSub ? `Sigue: «${nextSub.title}».` : `Ya terminaste todos los pasos de «${subMatch.g.title}». ¿Lo marco como cumplido?`}`;
+                    out.actions.push({ type: 'complete_subgoal', goal: subMatch.g, sub: subMatch.s });
+                    const nextSub = subMatch.g.subgoals.find(x => !x.done && x.id !== subMatch.s.id);
+                    replies.push(`Paso completado: «${subMatch.s.title}». ${nextSub ? `Sigue: «${nextSub.title}».` : `Terminaste todos los pasos de «${subMatch.g.title}». ¿Lo marco como cumplido?`}`);
                     if (!nextSub) appState.awaiting = { type: 'complete', goalId: subMatch.g.id };
                 } else if (na) {
                     appState.awaiting = { type: 'complete', goalId: na.goal.id };
-                    res.reply = `¡Bien! ¿Te refieres a «${na.goal.title}»? Si es así, dime "sí" y lo marco como cumplido.`;
+                    replies.push(`¡Bien! ¿Te refieres a «${na.goal.title}»? Si es así, dime "sí" y lo marco como cumplido.`);
                 } else {
-                    res.reply = 'Bien hecho. No tienes objetivos pendientes; ¿quieres agendar el siguiente?';
+                    replies.push('Bien hecho. No tienes objetivos pendientes; ¿quieres agendar el siguiente?');
                 }
-                res.focusStatus = 'Enfocado';
-                return res;
+                out.focus = 'Enfocado';
+                return finish();
             }
-
             if (/(que tengo|pendiente|agenda|que me toca|que sigue|mis objetivos|que hay para)/.test(t)) {
                 const list = pendingGoals().slice(0, 3);
-                res.reply = list.length
+                replies.push(list.length
                     ? `Tienes: ${list.map(g => `«${g.title}» ${g.due ? formatDue(g.due).toLowerCase() : ''}`).join('; ')}. ${na && na.sub ? `Tu siguiente paso concreto: «${na.sub.title}».` : '¿Por cuál empezamos?'}`
-                    : 'No tienes objetivos pendientes. Es buen momento para definir el próximo.';
-                return res;
+                    : 'No tienes objetivos pendientes. Es buen momento para definir el próximo.');
+                return finish();
             }
 
+            // C) Pensamientos explícitos
+            if (/(pensamiento intrusivo|no dejo de pensar|me vino a la mente|no soy capaz|no sirvo|me da miedo que|siento que voy a fallar)/.test(t)) {
+                out.thoughts.push({ type: 'intrusivo', text });
+                replies.push('Lo registro como pensamiento intrusivo. Obsérvalo sin pelear con él: no define lo que haces después.');
+            } else if (/(pensamiento positivo|orgullos|agradecid|logre|puedo hacerlo|me fue bien|estoy feliz de)/.test(t)) {
+                out.thoughts.push({ type: 'positivo', text });
+                replies.push('Lo guardo en tus pensamientos positivos. Recuérdalo cuando la mente se ponga en tu contra.');
+            }
+
+            // D) Respuesta emocional
             const step = na ? na.text : 'tu objetivo principal';
             const a = analyzeMood();
-            if (res.mood === 'ansioso') {
-                res.reply = `Noto ansiedad. Primero el cuerpo: inhala 4 segundos, sostén 4, exhala 6. Luego reduce todo a un paso: ${step}. ¿Qué pensamiento está alimentando esa inquietud?`;
-                res.focusStatus = 'Disperso'; res.suggestBlocker = true;
-            } else if (res.mood === 'estresado') {
-                res.reply = `Hay presión acumulada. No tienes que resolver todo hoy: enfócate solo en ${step} durante 25 minutos y suelta el resto.`;
-                res.focusStatus = 'Disperso'; res.suggestBlocker = true;
-            } else if (res.mood === 'neutro') {
-                res.reply = `Estado neutro registrado: una base estable. Una pequeña victoria ahora te dará impulso. ¿Arrancamos con ${step}?`;
-            } else if (res.mood === 'relajado') {
-                res.reply = `Buen estado de calma, la base ideal para avanzar sin presión. ¿Le dedicamos un bloque a ${step}?`;
-                res.focusStatus = 'Enfocado';
-            } else if (res.mood === 'positivo') {
-                res.reply = `Esa energía vale oro. Conviértela en acción ahora: ${step}. ¿Empezamos?`;
-                res.focusStatus = 'Enfocado';
-            } else if (/(celular|redes|instagram|tiktok|distraid|procrastin)/.test(t)) {
-                res.reply = `Detecto dispersión. Activa el escudo de enfoque en Configuración y vuelve a ${step}.`;
-                res.focusStatus = 'Disperso'; res.suggestBlocker = true;
-            } else {
-                res.reply = `Te escucho. ¿Cómo te hace sentir eso, y cómo se conecta con ${step}?`;
+            if (out.mood === 'ansioso') {
+                replies.push(`Noto ansiedad. Primero el cuerpo: inhala 4 segundos, sostén 4, exhala 6. Luego reduce todo a un paso: ${step}.`);
+                out.focus = 'Disperso';
+            } else if (out.mood === 'estresado') {
+                replies.push(`Hay presión acumulada. No tienes que resolver todo hoy: enfócate solo en ${step} durante 25 minutos y suelta el resto.`);
+                out.focus = 'Disperso';
+            } else if (out.mood === 'neutro') {
+                replies.push(`Estado neutro registrado: una base estable. Una pequeña victoria ahora te dará impulso. ¿Arrancamos con ${step}?`);
+            } else if (out.mood === 'relajado') {
+                replies.push(`Buen estado de calma, la base ideal para avanzar sin presión. ¿Le dedicamos un bloque a ${step}?`);
+                out.focus = 'Enfocado';
+            } else if (out.mood === 'positivo') {
+                replies.push(`Esa energía vale oro. Conviértela en acción ahora: ${step}. ¿Empezamos?`);
+                out.focus = 'Enfocado';
+            } else if (out.motivation && out.motivation <= 2) {
+                replies.push(`La motivación no siempre llega antes; muchas veces llega después de empezar. Dame solo 5 minutos con ${step}.`);
+            } else if (!replies.length) {
+                replies.push(moodKnown ? `Te escucho. ¿Cómo se conecta eso con ${step}?` : 'Te escucho.');
             }
-            if (res.mood && MOODS[res.mood].valence < 0 && a.persistent) {
-                res.reply += ` Llevas varios registros así; si persiste, hablarlo con un profesional puede ayudarte.`;
+            if (out.mood && MOODS[out.mood].valence < 0 && a.persistent) {
+                replies.push('Llevas varios registros así; si persiste, hablarlo con un profesional puede ayudarte.');
             }
-            res.recommendedAction = na ? (na.sub ? na.sub.title : na.goal.title) : '';
-            return res;
+            return finish();
         }
 
-        function applyAnalysis(userText, a) {
-            if (a.focusStatus) appState.focusState = a.focusStatus;
-
-            if (a.mood) {
-                const slot = slotFor();
-                recordCheckin({ mood: a.mood, intensity: a.intensity || 3, note: userText, source: checkinFor(dayKey(), slot) ? 'chat' : 'checkin', slot });
-            }
-
-            if (a.newGoal) {
-                const g = makeGoal({ title: a.newGoal.title, due: a.newGoal.due });
-                markPassedReminders(g);
-                appState.goals.push(g);
-                lastAddedId = g.id;
-                requestNotificationPermission();
-            }
-
-            if (a.completeGoal && !a.completeGoal.completed) {
-                completeGoal(a.completeGoal, true);
-                showToast(`✓ Cumplido: ${a.completeGoal.title}`);
-            }
-
-            if (a.prepareGoal) {
-                const g = a.prepareGoal;
-                startPreparing(g);
-                if (!a.reply) {
-                    const first = g.subgoals.find(s => !s.done);
-                    const t = goalTiming(g);
-                    a.reply = `Perfecto, te acompaño a prepararte para «${g.title}»${g.due ? ` (${formatRelative(t.diff)})` : ''}. Lo dividí en ${g.subgoals.length} pasos; empieza por: «${first ? first.title : 'revisar el plan'}».`;
-                }
-                a.recommendedAction = (g.subgoals.find(s => !s.done) || {}).title || g.title;
-            }
-
-            logThought(a.extractedThought || userText,
-                a.mood ? `${MOODS[a.mood].label} · ${a.intensity || 3}/5` : (a.focusStatus || 'Reflexión'),
-                a.recommendedAction || (a.newGoal ? `Agendar: ${a.newGoal.title}` : 'Conversación con el coach'));
-
-            appendMessage('ai', a.reply);
-            showSubtitle(a.reply, 'ai');
-            saveState();
-            if (isSheetOpen('sheet-hub')) hubTab === 'goals' ? renderGoals() : renderPulse();
-            speakText(a.reply);
-
-            if (a.suggestBlocker) setTimeout(() => showToast('Escudo de enfoque recomendado · Configuración'), 1200);
+        // Genera los pasos antes de responder para poder mencionarlos (el ejecutor los respeta)
+        function startPreparingPreview(goal) {
+            if (!goal.subgoals.length) goal.subgoals = generateSubgoals(goal);
         }
 
         // =========================================================================
-        // 10. CONFIGURACIÓN, BLOQUEO DE APPS Y ENFOQUE ESTRICTO
+        // 10. CONFIGURACIÓN, BLOQUEOS Y ENFOQUE ESTRICTO
         // =========================================================================
         let focusTimerInterval = null;
         let focusSecondsRemaining = 25 * 60;
@@ -2443,7 +2874,13 @@ Responde SOLO con JSON:
             else if (Notification.permission === 'granted') { st.textContent = 'Activadas'; btn.classList.add('hidden'); }
             else if (Notification.permission === 'denied') { st.textContent = 'Bloqueadas en el navegador'; btn.classList.remove('hidden'); }
             else { st.textContent = 'Desactivadas'; btn.classList.remove('hidden'); }
+
+            const aiText = { online: 'IA conectada (OpenAI)', offline: 'Modo local · servidor de IA no disponible', unknown: 'Se conectará con el primer mensaje' }[aiStatus];
+            document.getElementById('ai-status').textContent = aiText;
+            document.getElementById('ai-dot').style.background = aiStatus === 'online' ? TONE_COLORS.good : aiStatus === 'offline' ? TONE_COLORS.warn : 'rgba(255,255,255,0.3)';
+
             renderBlockerApps();
+            renderActiveBlocks();
         }
 
         function renderBlockerApps() {
@@ -2453,11 +2890,25 @@ Responde SOLO con JSON:
                         <div class="w-8 h-8 rounded-xl border border-white/15 flex items-center justify-center text-[10px] font-mono uppercase bg-white/5 shrink-0">${escapeHTML(app.name.substring(0, 2))}</div>
                         <div class="min-w-0">
                             <p class="text-xs text-white truncate">${escapeHTML(app.name)}</p>
-                            <span class="text-[10px] font-mono text-white/40">Límite: ${escapeHTML(app.limit)}</span>
+                            <span class="text-[10px] font-mono text-white/40">${isAppBlocked(app.name) ? '🔒 Bloqueada ahora' : 'Límite: ' + escapeHTML(app.limit)}</span>
                         </div>
                     </div>
                     <label class="switch"><input type="checkbox" ${app.blocked ? 'checked' : ''} onchange="toggleAppBlock(${index})"><span class="track"></span><span class="thumb"></span></label>
                 </div>`).join('');
+        }
+
+        function renderActiveBlocks() {
+            const el = document.getElementById('active-blocks');
+            const blocks = appState.appBlocks.filter(b => b.until > Date.now());
+            el.innerHTML = blocks.map(b => `
+                <div class="px-4 py-3 flex items-center justify-between gap-3">
+                    <div class="min-w-0">
+                        <p class="text-xs text-white truncate">🔒 ${escapeHTML(b.apps.join(', '))}</p>
+                        <span class="text-[10px] font-mono text-white/40">Hasta ${formatDue(new Date(b.until).toISOString())} · ${formatRelative(b.until - Date.now()).replace('en ', 'quedan ')}</span>
+                    </div>
+                    <button onclick="cancelBlock(${b.id})" class="text-[11px] text-white/40 hover:text-white transition shrink-0">Quitar</button>
+                </div>`).join('');
+            el.classList.toggle('hidden', !blocks.length);
         }
 
         function toggleAppBlock(index) {
@@ -2465,11 +2916,73 @@ Responde SOLO con JSON:
             saveState();
         }
 
-        function activateStrictFocusMode() {
+        function resolveApps(names) {
+            if (!names || !names.length) {
+                const sel = appState.blockedApps.filter(a => a.blocked).map(a => a.name);
+                return sel.length ? sel : appState.blockedApps.map(a => a.name);
+            }
+            return names.map(n => {
+                const nn = normalize(String(n));
+                const found = appState.blockedApps.find(a => normalize(a.name).includes(nn) || nn.includes(normalize(a.name).split(' ')[0]));
+                if (found) return found.name;
+                const name = String(n).trim().replace(/^\w/, c => c.toUpperCase());
+                appState.blockedApps.push({ id: 'app' + uid(), name, limit: '—', blocked: true });
+                return name;
+            }).filter((v, i, arr) => arr.indexOf(v) === i);
+        }
+
+        function scheduleBlock(appNames, minutes) {
+            const apps = resolveApps(appNames);
+            const block = { id: uid(), apps, from: Date.now(), until: Date.now() + minutes * 60e3 };
+            appState.appBlocks.push(block);
+            return block;
+        }
+
+        function scheduleBlockFromSettings() {
+            const mins = parseInt(document.getElementById('block-duration-select').value, 10);
+            const b = scheduleBlock([], mins);
+            saveState();
+            renderSettings();
+            showToast(`🔒 ${b.apps.join(', ')} · ${formatDuration(mins)}`);
+        }
+
+        function removeBlocks(appNames) {
+            const before = appState.appBlocks.length;
+            if (!appNames || !appNames.length) appState.appBlocks = [];
+            else {
+                const targets = resolveApps(appNames);
+                appState.appBlocks = appState.appBlocks
+                    .map(b => ({ ...b, apps: b.apps.filter(a => !targets.includes(a)) }))
+                    .filter(b => b.apps.length);
+            }
+            return before - appState.appBlocks.length || (appNames && appNames.length ? 1 : 0);
+        }
+
+        function cancelBlock(id) {
+            if (!confirm('¿Seguro que quieres romper este compromiso de bloqueo?')) return;
+            appState.appBlocks = appState.appBlocks.filter(b => b.id !== id);
+            saveState();
+            renderSettings();
+        }
+
+        function isAppBlocked(name) {
+            return appState.appBlocks.some(b => b.until > Date.now() && b.apps.includes(name));
+        }
+
+        function expireBlocks() {
+            const now = Date.now();
+            const expired = appState.appBlocks.filter(b => b.until <= now);
+            if (!expired.length) return;
+            appState.appBlocks = appState.appBlocks.filter(b => b.until > now);
+            coachSay(`Terminó el bloqueo de ${expired.flatMap(b => b.apps).join(', ')}. Cumpliste tu compromiso; úsalas con intención.`, { notify: true });
+            if (isSheetOpen('sheet-settings')) renderSettings();
+        }
+
+        function activateStrictFocusMode(minutesOverride) {
             const activeBlocked = appState.blockedApps.filter(a => a.blocked);
             if (!activeBlocked.length) { showToast('Selecciona al menos una app para bloquear.'); return; }
 
-            focusMinutes = parseInt(document.getElementById('focus-duration-select').value, 10) || 25;
+            focusMinutes = minutesOverride || parseInt(document.getElementById('focus-duration-select').value, 10) || 25;
             focusSecondsRemaining = focusMinutes * 60;
             document.getElementById('locked-apps-badges').innerHTML = activeBlocked.map(a =>
                 `<span class="px-3 py-1 rounded-full border border-white/20 bg-white/5 text-[11px] font-mono text-white/80">🔒 ${escapeHTML(a.name)}</span>`).join('');
@@ -2480,6 +2993,7 @@ Responde SOLO con JSON:
                 : 'Mantener estado de atención plena';
 
             closeSheet('sheet-settings');
+            if (isChatOpen()) closeChat();
             document.getElementById('strict-focus-overlay').classList.add('is-open');
             appState.focusState = 'Enfocado (Bloqueo)';
             saveState();
@@ -2492,7 +3006,6 @@ Responde SOLO con JSON:
                 updateCountdownDisplay();
                 if (focusSecondsRemaining <= 0) completeTaskAndUnlock(false);
             }, 1000);
-            speakText(`Modo enfoque activado por ${focusMinutes} minutos. Concéntrate en tu paso.`);
         }
 
         function updateCountdownDisplay() {
@@ -2512,15 +3025,11 @@ Responde SOLO con JSON:
             if (appState.focusSessions.length > 200) appState.focusSessions.shift();
 
             const na = nextAction();
-            if (markStep && na && na.sub) {
-                na.sub.done = true;
-                na.sub.doneAt = new Date().toISOString();
-            }
+            if (markStep && na && na.sub) setSubgoalDone(na.sub, true);
             saveState();
-            const msg = markStep && na && na.sub
+            coachSay(markStep && na && na.sub
                 ? `Bloque completado y paso «${na.sub.title}» marcado. Excelente disciplina.`
-                : 'Bloque de enfoque finalizado. ¿Completaste lo que te correspondía?';
-            coachSay(msg);
+                : 'Bloque de enfoque finalizado. ¿Completaste lo que te correspondía?');
         }
 
         function emergencyUnlockPrompt() {
@@ -2552,16 +3061,16 @@ Responde SOLO con JSON:
             const pill = document.getElementById('attention-pill');
             const urgent = pending.find(g => ['overdue', 'imminent', 'prepare'].includes(goalTiming(g).key));
             const slot = slotFor();
-            if (urgent) {
+            if (!checkinFor(dayKey(), slot)) {
+                pill.textContent = `${SLOTS[slot].icon} Primero, ${SLOTS[slot].question.toLowerCase()}`;
+                pill.style.borderColor = 'rgba(255,255,255,0.25)';
+                attentionAction = () => openCheckin();
+                pill.classList.remove('hidden');
+            } else if (urgent) {
                 const t = goalTiming(urgent);
                 pill.textContent = `⏱ ${urgent.title} · ${t.key === 'overdue' ? 'vencido' : formatRelative(t.diff)}${urgent.preparing ? '' : ' · ¿te preparas?'}`;
                 pill.style.borderColor = TONE_COLORS[t.tone] + '88';
                 attentionAction = () => openHub('goals');
-                pill.classList.remove('hidden');
-            } else if (!checkinFor(dayKey(), slot)) {
-                pill.textContent = `${SLOTS[slot].icon} Check-in de la ${SLOTS[slot].label.toLowerCase()} · ${SLOTS[slot].question}`;
-                pill.style.borderColor = 'rgba(255,255,255,0.2)';
-                attentionAction = () => openCheckin();
                 pill.classList.remove('hidden');
             } else {
                 pill.classList.add('hidden');
@@ -2584,7 +3093,7 @@ Responde SOLO con JSON:
             document.getElementById('toast-message').textContent = msg;
             toast.classList.add('show');
             clearTimeout(toastTimer);
-            toastTimer = setTimeout(() => toast.classList.remove('show'), 3200);
+            toastTimer = setTimeout(() => toast.classList.remove('show'), 3400);
         }
 
         function escapeHTML(str) {
@@ -2594,15 +3103,15 @@ Responde SOLO con JSON:
         }
 
         function clearHistory() {
-            if (!confirm('¿Borrar check-ins, bitácora y conversación? Los objetivos se mantienen.')) return;
-            appState.thoughtLogs = [];
+            if (!confirm('¿Borrar check-ins, pensamientos y conversaciones? Los objetivos se mantienen.')) return;
             appState.chatHistory = [];
             appState.checkins = [];
+            appState.thoughts = [];
             appState.intentions = {};
             appState.reflections = {};
             appState.focusSessions = [];
             appState.promptedSlots = {};
-            document.getElementById('chat-stream').innerHTML = '';
+            appState.awaiting = null;
             updateOrbTint();
             saveState();
             closeSheet('sheet-settings');
@@ -2613,24 +3122,27 @@ Responde SOLO con JSON:
         function initGreeting() {
             const stream = document.getElementById('chat-stream');
             stream.innerHTML = '';
+            lastRenderedDay = null;
             appState.chatHistory.forEach(m => renderMessage(m, false));
-            if (!appState.chatHistory.length) {
-                const na = nextAction();
-                const greeting = `Hola, soy AETHER, tu coach. ${SLOTS[slotFor()].question}${na ? ` Lo más cercano en tu agenda es ${na.text}.` : ''}`;
+            const dk = dayKey(), slot = slotFor();
+            if (!appState.chatHistory.length || (!checkinFor(dk, slot) && !appState.promptedSlots[`${dk}_${slot}`])) {
+                // Regla: lo primero es saber cómo se siente
+                const greeting = `Hola, soy AETHER, tu coach. Antes que nada: ${SLOTS[slot].question.toLowerCase()} ¿Cómo te sientes ahora mismo?`;
                 appendMessage('ai', greeting);
-                setTimeout(() => showSubtitle(greeting, 'ai'), 1900); // tras la intro
-                appState.promptedSlots[`${dayKey()}_${slotFor()}`] = true;
+                setTimeout(() => showSubtitle(greeting, 'ai'), 1900);
+                appState.promptedSlots[`${dk}_${slot}`] = true;
+                appState.awaiting = { type: 'ask_mood' };
                 saveState();
             }
         }
 
         function tick() {
+            expireBlocks();
             checkReminders();
             checkSlotPrompt();
             updateTelemetryUI();
-            // Refrescar cuentas regresivas sin romper lo que el usuario esté escribiendo
-            const list = document.getElementById('goals-list');
-            if (isSheetOpen('sheet-hub') && hubTab === 'goals' && !list.contains(document.activeElement)) renderGoals();
+            refreshHub();
+            if (isSheetOpen('sheet-settings')) renderActiveBlocks();
         }
 
         window.onload = () => {
